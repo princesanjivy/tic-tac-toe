@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:tic_tac_toe/check_win.dart';
 
 class Board extends StatefulWidget {
   const Board({super.key, required this.turn});
@@ -69,6 +71,7 @@ class _BoardState extends State<Board> {
                     // if (!board.contains(0)) {
                     //   emptyBoard();
                     // }
+                    print("object $index");
 
                     return GestureDetector(
                       onTap: () {
@@ -123,7 +126,7 @@ class _BoardState extends State<Board> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           emptyBoard();
         },
         child: Icon(Icons.restart_alt_rounded),
@@ -131,3 +134,84 @@ class _BoardState extends State<Board> {
     );
   }
 }
+
+// StreamBuilder<DatabaseEvent>(
+// stream: FirebaseDatabase.instance.ref("/room").onValue,
+// builder: (context, db) {
+// if (!db.hasData) return const CircularProgressIndicator();
+// return GridView.builder(
+// padding: EdgeInsets.all(8),
+// physics: NeverScrollableScrollPhysics(),
+// shrinkWrap: true,
+// gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+// crossAxisCount: 3,
+// crossAxisSpacing: 8,
+// mainAxisSpacing: 8,
+// // childAspectRatio: 1,
+// ),
+// itemCount: 9,
+// itemBuilder: (context, index) {
+// Map roomData = db.data!.snapshot.value as Map;
+// List<int> board = List<int>.from(roomData["board"] );
+//
+// /// needs to be changed
+// // if (!board.contains(0)) {
+// //   emptyBoard();
+// // }
+//
+// print("Test");
+//
+// // if(checkWin(board, widget.turn)){
+// //   print("Winer is ${widget.turn}");
+// // }
+//
+// return GestureDetector(
+// onTap: () {
+// if (board[index] == 0 &&
+// roomData["turn"] == widget.turn) {
+// /// not efficient way of doing
+// FirebaseDatabase.instance
+//     .ref("/room/board/$index")
+//     .set(widget.turn);
+// FirebaseDatabase.instance
+//     .ref("/room/turn")
+//     .set(widget.turn == 1 ? 2 : 1);
+// }
+// },
+// child: Material(
+// clipBehavior: Clip.antiAlias,
+// elevation: 8,
+// shape: BeveledRectangleBorder(
+// side: BorderSide(
+// color: Colors.blue,
+// width: 1.5,
+// ),
+// borderRadius: BorderRadius.circular(8),
+// ),
+// child: Container(
+// color: Colors.blue.shade100,
+// child: Center(
+// child: Text(
+// board[index] == 1
+// ? "x"
+//     : board[index] == 2
+// ? "o"
+//     : "",
+// style: GoogleFonts.orbitron(
+// color: board[index] == 1
+// ? Colors.indigo
+//     : board[index] == 2
+// ? Colors.pink
+//     : Colors.white,
+// fontSize: 60,
+// // fontWeight: FontWeight.bold,
+// ),
+// textAlign: TextAlign.center,
+// ),
+// ),
+// ),
+// ),
+// );
+// },
+// );
+// }),
