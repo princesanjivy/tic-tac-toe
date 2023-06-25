@@ -1,11 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
-import 'package:tic_tac_toe/room.dart';
+import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/screen/room.dart';
+import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,8 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    player.setVolume(0.025);
-    player.setReleaseMode(ReleaseMode.loop);
+    // player.stop();
+    // player.setVolume(0.055);
+    // player.setReleaseMode(ReleaseMode.loop);
     // player.play(AssetSource("audio/bg_music.mp3"));
   }
 
@@ -32,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     super.dispose();
 
-    player.stop();
-    player.dispose();
+    // player.stop();
+    // player.dispose();
   }
 
   @override
@@ -57,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // characterDelay: const Duration(milliseconds: 100),
                   incomingEffect:
                       WidgetTransitionEffects.incomingSlideInFromBottom(),
-                  atRestEffect: WidgetRestingEffects.wave(),
+                  // atRestEffect: WidgetRestingEffects.wave(),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const VerticalSpacer(48),
                     WidgetAnimator(
                       incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                        delay: const Duration(milliseconds: 2200),
+                        delay: const Duration(milliseconds: 1600),
                       ),
                       atRestEffect: WidgetRestingEffects.wave(),
                       child: Text(
@@ -80,17 +83,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     const VerticalSpacer(32),
                     WidgetAnimator(
                       incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                        delay: const Duration(milliseconds: 1200),
+                        delay: const Duration(milliseconds: 800),
                         curve: Curves.easeInOut,
                       ),
                       child: MyButton(
                         onPressed: () {
-                          buttonClickPlayer
-                              .play(AssetSource("audio/click.wav"));
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GameRoom()));
+                          print("Player vs AI mode");
+                          Navigation.changeScreenReplacement(
+                            context,
+                            const RoomScreen(),
+                            widget,
+                          );
+                          // buttonClickPlayer
+                          //     .play(AssetSource("audio/click.wav"));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => GameRoom()));
                         },
                         text: "Single",
                       ),
@@ -98,15 +107,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const VerticalSpacer(16),
                     WidgetAnimator(
                       incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                        delay: const Duration(milliseconds: 1600),
+                        delay: const Duration(milliseconds: 1200),
                         curve: Curves.easeInOut,
                       ),
                       child: MyButton(
                         onPressed: () {
-                          buttonClickPlayer
-                              .play(AssetSource("audio/click.wav"));
-                          // player.stop();
-                          print("Music stopped!");
+                          print("Online mode");
                         },
                         text: "Online",
                       ),
@@ -119,29 +125,72 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned(
             top: 32,
             right: 32,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all<Size>(
-                  const Size(48, 48),
-                ),
-                elevation: MaterialStateProperty.all<double>(4),
-                shape: MaterialStateProperty.all<OutlinedBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.all(0)),
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(primaryColor),
+            child: WidgetAnimator(
+              incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                delay: const Duration(milliseconds: 1600),
+                curve: Curves.easeInOut,
               ),
-              child: Text(
-                "i",
-                style: TextStyle(
-                  fontSize: defaultTextSize,
-                  color: bgColor,
-                  letterSpacing: 1,
+              child: ElevatedButton(
+                onPressed: () {
+                  Vibration.vibrate(duration: 80, amplitude: 120);
+                  AudioController.buttonClick("audio/click2.ogg");
+
+                  print("show menu card");
+
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: bgColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          title: Text(
+                            "Info",
+                            style: TextStyle(
+                              fontSize: defaultTextSize + 6,
+                              color: primaryColor,
+                            ),
+                          ),
+                          content: SizedBox(
+                            height: 100,
+                            child: Column(
+                              children: [
+                                Text(
+                                  "App settings will appear here",
+                                  style: TextStyle(
+                                    fontSize: defaultTextSize,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                },
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all<Size>(
+                    const Size(48, 48),
+                  ),
+                  elevation: MaterialStateProperty.all<double>(4),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.all(0)),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(primaryColor),
+                ),
+                child: Text(
+                  "i",
+                  style: TextStyle(
+                    fontSize: defaultTextSize,
+                    color: bgColor,
+                    letterSpacing: 1,
+                  ),
                 ),
               ),
             ),

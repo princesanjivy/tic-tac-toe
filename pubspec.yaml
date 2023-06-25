@@ -41,6 +41,9 @@ dependencies:
   google_fonts: ^5.1.0
   provider: ^6.0.5
   widget_and_text_animator: ^1.0.9
+  vibration: ^1.8.1
+  shared_preferences: ^2.1.2
+  page_transition: ^2.0.9
 
 dependency_overrides:
   http: ^1.0.0
@@ -71,6 +74,8 @@ flutter:
   assets:
     - assets/audio/bg_music.mp3
     - assets/audio/click.wav
+    - assets/audio/click1.ogg
+    - assets/audio/click2.ogg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/firebase_options.dart';
+import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 
 void main() async {
@@ -20,6 +21,9 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.white),
   );
+
+  AudioController.playAudio =
+      false; // TODO: remove this once shared prefs is in place
 
   runApp(
     const MyApp(),
@@ -38,7 +42,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        useMaterial3: true,
+        useMaterial3: false,
         textTheme: GoogleFonts.judsonTextTheme().copyWith(
             // bodyMedium: GoogleFonts.judson(
             //   color: secondaryColor,

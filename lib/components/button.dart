@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:vibration/vibration.dart';
 
 class MyButton extends StatelessWidget {
   const MyButton({super.key, required this.text, required this.onPressed});
 
   final String text;
-  final VoidCallback onPressed;
+  final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: () {
+        Vibration.vibrate(duration: 80, amplitude: 120);
+        AudioController.buttonClick("audio/click2.ogg");
+        onPressed();
+      },
       style: ButtonStyle(
         minimumSize: MaterialStateProperty.all<Size>(
           Size(width / 1.6, 48),
