@@ -44,6 +44,10 @@ dependencies:
   vibration: ^1.8.1
   shared_preferences: ^2.1.2
   page_transition: ^2.0.9
+  share_plus: ^7.0.2
+  firebase_auth: ^4.6.3
+  google_sign_in: ^6.1.4
+  fluttertoast: ^8.0.8
 
 dependency_overrides:
   http: ^1.0.0
