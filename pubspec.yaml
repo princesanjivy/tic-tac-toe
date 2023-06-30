@@ -48,6 +48,7 @@ dependencies:
   firebase_auth: ^4.6.3
   google_sign_in: ^6.1.4
   fluttertoast: ^8.0.8
+  cloud_firestore: ^4.8.2
 
 dependency_overrides:
   http: ^1.0.0
