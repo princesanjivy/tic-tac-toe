@@ -1,31 +1,65 @@
-bool checkWin(List<int> board, int player) {
-  int size = (board.length / 3).round(); // Calculate the size of the square board
+class Result {
+  bool hasWon;
+  List<int> positions;
+
+  Result(this.hasWon, this.positions);
+}
+
+Result checkWin(List board, int player) {
+  int size =
+      (board.length / 3).round(); // Calculate the size of the square board
 
   // Check rows
   for (int i = 0; i < size; i++) {
     int rowStart = i * size;
-    if (board.sublist(rowStart, rowStart + size).every((cell) => cell == player)) {
-      return true;
+    List<int> rowPositions = [];
+    if (board
+        .sublist(rowStart, rowStart + size)
+        .every((cell) => cell == player)) {
+      for (int j = 0; j < size; j++) {
+        rowPositions.add(rowStart + j);
+      }
+      return Result(true, rowPositions);
     }
   }
 
   // Check columns
   for (int i = 0; i < size; i++) {
     int colStart = i;
-    if (List.generate(size, (j) => board[colStart + j * size]).every((cell) => cell == player)) {
-      return true;
+    List<int> colPositions = [];
+    if (List.generate(size, (j) => board[colStart + j * size])
+        .every((cell) => cell == player)) {
+      for (int j = 0; j < size; j++) {
+        colPositions.add(colStart + j * size);
+      }
+      return Result(true, colPositions);
     }
   }
 
   // Check diagonals
-  if (List.generate(size, (i) => board[i * size + i]).every((cell) => cell == player)) {
-    return true;
-  }
-  if (List.generate(size, (i) => board[(i + 1) * size - 1 - i]).every((cell) => cell == player)) {
-    return true;
-  }
+  // List<int> diagonalPositions1 = [];
+  // if (List.generate(size, (i) => board[i * size + i]).every((cell) {
+  //   diagonalPositions1.add(i * size + i);
+  //   return cell == player;
+  // })) {
+  //   return Result(true, diagonalPositions1);
+  // }
+
+  // List<int> diagonalPositions2 = [];
+  // bool isDiagonal2Win = true;
+  // for (int i = 0; i < size; i++) {
+  //   int position = (i + 1) * size - 1 - i;
+  //   diagonalPositions2.add(position);
+  //   if (board[position] != player) {
+  //     isDiagonal2Win = false;
+  //     break;
+  //   }
+  // }
+  //
+  // if (isDiagonal2Win) {
+  //   return Result(true, diagonalPositions2);
+  // }
 
   // No winning condition found
-  return false;
+  return Result(false, []);
 }
-

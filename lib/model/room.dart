@@ -7,7 +7,7 @@ class RoomData {
   bool isStarted = false;
 
   final List<Player> players;
-  final List<Map<int, int>> board;
+  final List board;
 
   RoomData(
     this.code,
@@ -23,8 +23,8 @@ class RoomData {
       players.add(Player.fromRoomDataJson(element));
     });
 
-    RoomData roomData =
-        RoomData(code, json!["roomOwnerId"], json!["turn"], players, []);
+    RoomData roomData = RoomData(
+        code, json!["roomOwnerId"], json!["turn"], players, json!["board"]);
     roomData.isStarted = json!["isStarted"];
 
     return roomData;
@@ -44,5 +44,6 @@ class RoomData {
         "turn": turn,
         "isStarted": isStarted,
         "players": playersToJson(players),
+        "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
       };
 }

@@ -60,7 +60,10 @@ class _LobbyScreenState extends State<LobbyScreen> {
             // List players = db.data!.snapshot.value as List;
             print(roomData.players);
             if (roomData.isStarted) {
-              return const GameScreen();
+              return GameScreen(
+                roomData: roomData,
+                isRoomOwner: widget.isRoomOwner,
+              );
             }
             return Scaffold(
               backgroundColor: bgColor,
@@ -107,6 +110,8 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                     ),
                                   ],
                                 ),
+
+                                /// share button
                                 Positioned(
                                   top: 20,
                                   right: 10,

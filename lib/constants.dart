@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 Color primaryColor = const Color(0xFFB95300);
 Color secondaryColor = const Color(0xFFF39C11);
 Color bgColor = const Color(0xFFFBE5A9);
+Color winColor = const Color(0xFF00FF7F);
 
 double defaultTextSize = 18;
 double borderRadius = 12;
