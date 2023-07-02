@@ -25,6 +25,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final AudioPlayer player = AudioPlayer();
   final AudioPlayer buttonClickPlayer = AudioPlayer();
 
+  late Navigation navigation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    navigation = Navigation(Navigator.of(context));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -93,8 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: MyButton(
                         onPressed: () {
                           print("Player vs AI mode");
-                          Navigation.changeScreenReplacement(
-                            context,
+                          navigation.changeScreenReplacement(
                             const RoomScreen(),
                             widget,
                           );
@@ -121,8 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             User? user = FirebaseAuth.instance.currentUser;
                             if (user != null) {
                               print("user is available");
-                              Navigation.changeScreenReplacement(
-                                context,
+                              navigation.changeScreenReplacement(
                                 const RoomScreen(),
                                 widget,
                               );

@@ -34,6 +34,15 @@ class LobbyScreen extends StatefulWidget {
 }
 
 class _LobbyScreenState extends State<LobbyScreen> {
+  late Navigation navigation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    navigation = Navigation(Navigator.of(context));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<LoginProvider>(
@@ -259,8 +268,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
 
                           // TODO: show confirmation pop & close the room i.e delete record in db
                           // Navigation.goBack(context);
-                          Navigation.changeScreenReplacement(
-                            context,
+                          navigation.changeScreenReplacement(
                             const RoomScreen(),
                             widget,
                           );

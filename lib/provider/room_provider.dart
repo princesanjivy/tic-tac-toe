@@ -3,11 +3,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/constants.dart';
-import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
-import 'package:tic_tac_toe/screen/lobby.dart';
 
 class RoomProvider with ChangeNotifier {
   bool _showLoading = false;
@@ -21,11 +19,7 @@ class RoomProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createRoom(
-    Player player,
-    BuildContext context,
-    Widget widget,
-  ) async {
+  Future<int> createRoom(Player player, Widget widget) async {
     loading = true;
 
     // int code = generateRandomRoomCode();
@@ -53,22 +47,12 @@ class RoomProvider with ChangeNotifier {
 
     loading = false;
 
-    Navigation.changeScreenReplacement(
-      context,
-      LobbyScreen(
-        roomCode: code,
-        isRoomOwner: true,
-      ),
-      widget,
-    );
+    return code;
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    // });
   }
 
-  Future<void> joinRoom(
-    Player player,
-    int roomCode,
-    BuildContext context,
-    Widget widget,
-  ) async {
+  Future<int> joinRoom(Player player, int roomCode, Widget widget) async {
     // loading = true;
     String path = "$roomPath$roomCode/players";
 
@@ -80,14 +64,7 @@ class RoomProvider with ChangeNotifier {
 
     // loading = false;
 
-    Navigation.changeScreenReplacement(
-      context,
-      LobbyScreen(
-        roomCode: roomCode,
-        isRoomOwner: false,
-      ),
-      widget,
-    );
+    return roomCode;
   }
 
   void isStarted(bool v, int roomCode) async {

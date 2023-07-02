@@ -8,6 +8,7 @@ import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
+import 'package:tic_tac_toe/screen/lobby.dart';
 import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
@@ -20,6 +21,15 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
   TextEditingController roomCodeController = TextEditingController();
+
+  late Navigation navigation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    navigation = Navigation(Navigator.of(context));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +99,18 @@ class _RoomScreenState extends State<RoomScreen> {
                   child: Consumer2<RoomProvider, LoginProvider>(
                       builder: (context, roomProvider, loginProvider, _) {
                     return MyButton(
-                      onPressed: () {
-                        roomProvider.joinRoom(
+                      onPressed: () async {
+                        int roomCode = await roomProvider.joinRoom(
                           loginProvider.getUserData,
                           int.parse(roomCodeController.text),
-                          context,
+                          widget,
+                        );
+
+                        navigation.changeScreenReplacement(
+                          LobbyScreen(
+                            roomCode: roomCode,
+                            isRoomOwner: false,
+                          ),
                           widget,
                         );
                       },
@@ -123,10 +140,17 @@ class _RoomScreenState extends State<RoomScreen> {
                   child: Consumer2<RoomProvider, LoginProvider>(
                       builder: (context, roomProvider, loginProvider, _) {
                     return MyButton(
-                      onPressed: () {
-                        roomProvider.createRoom(
+                      onPressed: () async {
+                        int roomCode = await roomProvider.createRoom(
                           loginProvider.getUserData,
-                          context,
+                          widget,
+                        );
+
+                        navigation.changeScreenReplacement(
+                          LobbyScreen(
+                            roomCode: roomCode,
+                            isRoomOwner: true,
+                          ),
                           widget,
                         );
                       },
@@ -152,8 +176,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   AudioController.buttonClick("audio/click2.ogg");
 
                   // Navigation.goBack(context);
-                  Navigation.changeScreenReplacement(
-                    context,
+                  navigation.changeScreenReplacement(
                     const HomeScreen(),
                     widget,
                   );
