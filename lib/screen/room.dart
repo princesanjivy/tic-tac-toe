@@ -1,12 +1,18 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tic_tac_toe/check_win.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/model/room.dart';
+import 'package:tic_tac_toe/model/symbol.dart';
+import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
+import 'package:tic_tac_toe/screen/game.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:tic_tac_toe/screen/lobby.dart';
 import 'package:vibration/vibration.dart';
@@ -107,7 +113,7 @@ class _RoomScreenState extends State<RoomScreen> {
                         );
 
                         navigation.changeScreenReplacement(
-                          LobbyScreen(
+                          GameScreenController(
                             roomCode: roomCode,
                             isRoomOwner: false,
                           ),
@@ -147,7 +153,7 @@ class _RoomScreenState extends State<RoomScreen> {
                         );
 
                         navigation.changeScreenReplacement(
-                          LobbyScreen(
+                          GameScreenController(
                             roomCode: roomCode,
                             isRoomOwner: true,
                           ),
@@ -213,6 +219,88 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class GameScreenController extends StatelessWidget {
+  const GameScreenController({
+    super.key,
+    required this.roomCode,
+    required this.isRoomOwner,
+  });
+
+  final int roomCode;
+  final bool isRoomOwner;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GameProvider>(
+      // TODO: remove this if not needed
+      builder: (context, gameProvider, _) {
+        return StreamBuilder<DatabaseEvent>(
+          stream: FirebaseDatabase.instance.ref("$roomPath$roomCode/").onValue,
+          builder: (context, db) {
+            if (!db.hasData) {
+              return Scaffold(
+                backgroundColor: bgColor,
+                body: Center(
+                  child: CircularProgressIndicator(
+                    color: primaryColor,
+                    strokeWidth: 2,
+                  ),
+                ),
+              );
+            }
+            RoomData roomData = RoomData.fromJson(
+              db.data!.snapshot.value,
+              roomCode,
+            );
+            // print(roomData);
+
+            if (roomData.isStarted) {
+              print("Current board: ${roomData.board}");
+
+              // TODO: implement below in GameScreen
+              Result result = checkWin(
+                roomData.board,
+                PlaySymbol.inNum(
+                  roomData.turn == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x,
+                ),
+              );
+              if (result.hasWon || !roomData.board.contains(0)) {
+                print("Game over");
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const SimpleDialog(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child:
+                              Text("Game over\n\nRestarting in 5 seconds..."),
+                        ),
+                      ],
+                    ),
+                  );
+                });
+                gameProvider.resetBoard("$roomPath${roomData.code}", context);
+              }
+
+              return GameScreen(
+                roomData: roomData,
+                isRoomOwner: isRoomOwner,
+                result: result,
+              );
+            }
+
+            return LobbyScreen(
+              roomData: roomData,
+              isRoomOwner: isRoomOwner,
+            );
+          },
+        );
+      },
     );
   }
 }

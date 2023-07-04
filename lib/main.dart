@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/firebase_options.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
@@ -36,6 +37,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => RoomProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => GameProvider(),
         ),
       ],
       child: const MyApp(),

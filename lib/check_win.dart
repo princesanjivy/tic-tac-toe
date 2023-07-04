@@ -37,28 +37,35 @@ Result checkWin(List board, int player) {
   }
 
   // Check diagonals
-  // List<int> diagonalPositions1 = [];
-  // if (List.generate(size, (i) => board[i * size + i]).every((cell) {
-  //   diagonalPositions1.add(i * size + i);
-  //   return cell == player;
-  // })) {
-  //   return Result(true, diagonalPositions1);
-  // }
+  List<int> diagonalPositions1 = [];
+  bool isDiagonal1Win = true;
+  for (int i = 0; i < size; i++) {
+    int position = i * size + i;
+    diagonalPositions1.add(position);
+    if (board[position] != player) {
+      isDiagonal1Win = false;
+      break;
+    }
+  }
 
-  // List<int> diagonalPositions2 = [];
-  // bool isDiagonal2Win = true;
-  // for (int i = 0; i < size; i++) {
-  //   int position = (i + 1) * size - 1 - i;
-  //   diagonalPositions2.add(position);
-  //   if (board[position] != player) {
-  //     isDiagonal2Win = false;
-  //     break;
-  //   }
-  // }
-  //
-  // if (isDiagonal2Win) {
-  //   return Result(true, diagonalPositions2);
-  // }
+  if (isDiagonal1Win) {
+    return Result(true, diagonalPositions1);
+  }
+
+  List<int> diagonalPositions2 = [];
+  bool isDiagonal2Win = true;
+  for (int i = 0; i < size; i++) {
+    int position = (i + 1) * size - 1 - i;
+    diagonalPositions2.add(position);
+    if (board[position] != player) {
+      isDiagonal2Win = false;
+      break;
+    }
+  }
+
+  if (isDiagonal2Win) {
+    return Result(true, diagonalPositions2);
+  }
 
   // No winning condition found
   return Result(false, []);
