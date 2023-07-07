@@ -8,6 +8,7 @@ import 'package:tic_tac_toe/check_win.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
@@ -32,19 +33,30 @@ class GameScreen extends StatefulWidget {
 // 3 4 5
 // 6 7 8
 
+// 0 1 2 3
+// 4 5 6 7
+// 8 9 10 11
+// 12 13 14 15
+
+// 0 1 2 3 4
+// 5 6 7 8 9
+// 10 11 12 13 14
+// 15 16 17 18 19
+// 20 21 22 23 24
+
 class _GameScreenState extends State<GameScreen> {
-  List<int> corners = [0, 2, 6, 8];
+  List<int> corners = [0, 4, 20, 24];
   Map<int, BorderRadiusGeometry> borders = {
     0: const BorderRadius.only(
       topLeft: Radius.circular(16),
     ),
-    2: const BorderRadius.only(
+    4: const BorderRadius.only(
       topRight: Radius.circular(16),
     ),
-    6: const BorderRadius.only(
+    20: const BorderRadius.only(
       bottomLeft: Radius.circular(16),
     ),
-    8: const BorderRadius.only(
+    24: const BorderRadius.only(
       bottomRight: Radius.circular(16),
     ),
   };
@@ -66,7 +78,8 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     PlayerCard(
                       imageUrl: loginProvider.getUserData.displayPicture,
-                      name: "You",
+                      name:
+                          "You (${widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose})",
                       showScore: true,
                       scoreValue: 0,
                     ),
@@ -78,12 +91,28 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    PlayerCard(
-                      imageUrl: imageUrl,
-                      name: "Opponent",
-                      showScore: true,
-                      scoreValue: 0,
+                    FutureBuilder<Player>(
+                      future: loginProvider.getUserById(widget.roomData
+                          .players[widget.isRoomOwner ? 1 : 0].playerId),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return CircularProgressIndicator(color: bgColor);
+                        }
+                        return PlayerCard(
+                          imageUrl: snapshot.data!.displayPicture,
+                          name:
+                              "${snapshot.data!.name} (${widget.roomData.players[widget.isRoomOwner ? 1 : 0].chose})",
+                          showScore: true,
+                          scoreValue: 0,
+                        );
+                      },
                     ),
+                    // PlayerCard(
+                    //   imageUrl: imageUrl,
+                    //   name: "Opponent",
+                    //   showScore: true,
+                    //   scoreValue: 0,
+                    // ),
                   ],
                 ),
                 const VerticalSpacer(16),
@@ -184,21 +213,25 @@ class _GameScreenState extends State<GameScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    "Your turn",
+                    (widget.roomData.turn ==
+                            widget.roomData.players[!widget.isRoomOwner ? 1 : 0]
+                                .chose)
+                        ? "Your turn"
+                        : "Opponent turn",
                     style: TextStyle(
                       fontSize: defaultTextSize,
                       color: bgColor,
                     ),
                   ),
                 ),
-                const VerticalSpacer(8),
-                Text(
-                  widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose,
-                  style: GoogleFonts.hennyPenny(
-                    fontSize: 32,
-                    color: primaryColor,
-                  ),
-                ),
+                // const VerticalSpacer(8),
+                // Text(
+                //   widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose,
+                //   style: GoogleFonts.hennyPenny(
+                //     fontSize: 32,
+                //     color: primaryColor,
+                //   ),
+                // ),
               ],
             ),
           ),

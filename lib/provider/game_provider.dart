@@ -19,7 +19,34 @@ class GameProvider with ChangeNotifier {
       const Duration(seconds: 5),
       () {
         FirebaseDatabase.instance.ref(refPath).update({
-          "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          // "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "board": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
         });
         Navigator.pop(context);
       },

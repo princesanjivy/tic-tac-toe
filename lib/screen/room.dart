@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/check_win.dart';
 import 'package:tic_tac_toe/components/button.dart';
@@ -106,19 +107,30 @@ class _RoomScreenState extends State<RoomScreen> {
                       builder: (context, roomProvider, loginProvider, _) {
                     return MyButton(
                       onPressed: () async {
-                        int roomCode = await roomProvider.joinRoom(
-                          loginProvider.getUserData,
-                          int.parse(roomCodeController.text),
-                          widget,
-                        );
+                        int roomCodeInput = int.parse(roomCodeController.text);
+                        bool isRoomExist =
+                            await roomProvider.isRoomExist(roomCodeInput);
+                        if (!isRoomExist) {
+                          Fluttertoast.showToast(
+                            msg: "Room doesn't exist",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                          );
+                        } else {
+                          int roomCode = await roomProvider.joinRoom(
+                            loginProvider.getUserData,
+                            roomCodeInput,
+                            widget,
+                          );
 
-                        navigation.changeScreenReplacement(
-                          GameScreenController(
-                            roomCode: roomCode,
-                            isRoomOwner: false,
-                          ),
-                          widget,
-                        );
+                          navigation.changeScreenReplacement(
+                            GameScreenController(
+                              roomCode: roomCode,
+                              isRoomOwner: false,
+                            ),
+                            widget,
+                          );
+                        }
                       },
                       text: "Join",
                     );

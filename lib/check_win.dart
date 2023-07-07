@@ -7,7 +7,7 @@ class Result {
 
 Result checkWin(List board, int player) {
   int size =
-      (board.length / 3).round(); // Calculate the size of the square board
+      (board.length / 5).round(); // Calculate the size of the square board
 
   // Check rows
   for (int i = 0; i < size; i++) {

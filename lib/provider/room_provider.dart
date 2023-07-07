@@ -73,6 +73,23 @@ class RoomProvider with ChangeNotifier {
     );
   }
 
+  void leaveRoom(RoomData roomData, bool isRoomOwner) async {
+    String path = "$roomPath${roomData.code}/players/";
+    if (!isRoomOwner) {
+      path += "1";
+    } else {
+      await FirebaseDatabase.instance.ref("$roomPath${roomData.code}").remove();
+    }
+    await FirebaseDatabase.instance.ref(path).remove();
+  }
+
+  Future<bool> isRoomExist(int roomCode) async {
+    String path = "$roomPath$roomCode";
+    DatabaseEvent databaseEvent =
+        await FirebaseDatabase.instance.ref(path).once();
+
+    return databaseEvent.snapshot.value != null;
+  }
 // updateRoomStatus() {
 //
 // }

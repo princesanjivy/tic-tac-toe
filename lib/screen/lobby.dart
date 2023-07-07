@@ -181,7 +181,15 @@ class _LobbyScreenState extends State<LobbyScreen> {
                     ),
                     const VerticalSpacer(84),
                     widget.roomData.players.length == 2
-                        ? Container()
+                        ? widget.isRoomOwner
+                            ? Container()
+                            : Text(
+                                "Wait for Player1 to start the game",
+                                style: TextStyle(
+                                  fontSize: defaultTextSize - 4,
+                                  color: secondaryColor,
+                                ),
+                              )
                         : Text(
                             "Waiting for player to join...",
                             style: TextStyle(
@@ -190,13 +198,17 @@ class _LobbyScreenState extends State<LobbyScreen> {
                             ),
                           ),
                     widget.roomData.players.length == 2
-                        ? Container()
+                        ? !widget.isRoomOwner
+                            ? const VerticalSpacer(8)
+                            : Container()
                         : const VerticalSpacer(8),
 
                     Consumer<RoomProvider>(builder: (context, roomProvider, _) {
                       return MyButton(
                         text: widget.roomData.players.length == 2
-                            ? "Start"
+                            ? widget.isRoomOwner
+                                ? "Start"
+                                : "Waiting..."
                             : "Waiting...",
                         onPressed: () {
                           if (widget.isRoomOwner) {
@@ -234,12 +246,47 @@ class _LobbyScreenState extends State<LobbyScreen> {
                       Vibration.vibrate(duration: 80, amplitude: 120);
                       AudioController.buttonClick("audio/click2.ogg");
 
-                      // TODO: show confirmation pop & close the room i.e delete record in db
-                      // Navigation.goBack(context);
-                      navigation.changeScreenReplacement(
-                        const RoomScreen(),
-                        widget,
-                      );
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            RoomProvider roomProvider =
+                                Provider.of<RoomProvider>(context,
+                                    listen: false);
+
+                            return AlertDialog(
+                              backgroundColor: bgColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              title: const Text("Are you sure want to leave?"),
+                              content: SizedBox(
+                                height: 200,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Leave room!"),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                MyButton(
+                                  text: "Yes",
+                                  onPressed: () {
+                                    roomProvider.leaveRoom(
+                                      widget.roomData,
+                                      widget.isRoomOwner,
+                                    );
+                                    // TODO: navigate back screen only when it is deleted!
+                                    Navigation.goBack(context);
+                                    navigation.changeScreenReplacement(
+                                      const RoomScreen(),
+                                      widget,
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          });
                     },
                     style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all<Size>(
