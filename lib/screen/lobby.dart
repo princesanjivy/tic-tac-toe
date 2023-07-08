@@ -271,17 +271,19 @@ class _LobbyScreenState extends State<LobbyScreen> {
                               actions: [
                                 MyButton(
                                   text: "Yes",
-                                  onPressed: () {
-                                    roomProvider.leaveRoom(
-                                      widget.roomData,
-                                      widget.isRoomOwner,
-                                    );
-                                    // TODO: navigate back screen only when it is deleted!
+                                  onPressed: () async {
                                     Navigation.goBack(context);
-                                    navigation.changeScreenReplacement(
+                                    await navigation.changeScreenReplacement(
                                       const RoomScreen(),
                                       widget,
                                     );
+
+                                    // await roomProvider.leaveRoom(
+                                    //   widget.roomData,
+                                    //   widget.isRoomOwner,
+                                    //   navigation,
+                                    //   widget,
+                                    // );
                                   },
                                 ),
                               ],

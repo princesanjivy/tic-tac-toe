@@ -9,6 +9,7 @@ import 'package:tic_tac_toe/model/symbol.dart';
 
 class RoomProvider with ChangeNotifier {
   bool _showLoading = false;
+  bool showJoinLoading = false;
 
   bool get loading {
     return _showLoading;
@@ -52,8 +53,10 @@ class RoomProvider with ChangeNotifier {
     // });
   }
 
-  Future<int> joinRoom(Player player, int roomCode, Widget widget) async {
-    // loading = true;
+  Future<void> joinRoom(Player player, int roomCode, Widget widget) async {
+    showJoinLoading = true;
+    notifyListeners();
+
     String path = "$roomPath$roomCode/players";
 
     // DataSnapshot data =
@@ -62,9 +65,8 @@ class RoomProvider with ChangeNotifier {
     player.chose = PlaySymbol.o;
     await FirebaseDatabase.instance.ref(path).update({"1": player.toJson()});
 
-    // loading = false;
-
-    return roomCode;
+    showJoinLoading = false;
+    notifyListeners();
   }
 
   void isStarted(bool v, int roomCode) async {
@@ -73,20 +75,26 @@ class RoomProvider with ChangeNotifier {
     );
   }
 
-  void leaveRoom(RoomData roomData, bool isRoomOwner) async {
-    String path = "$roomPath${roomData.code}/players/";
-    if (!isRoomOwner) {
-      path += "1";
+  Future<void> leaveRoom(int roomCode, bool isRoomOwner) async {
+    String path = "$roomPath${roomCode}/players/";
+    if (isRoomOwner) {
+      await FirebaseDatabase.instance.ref("$roomPath${roomCode}").remove();
     } else {
-      await FirebaseDatabase.instance.ref("$roomPath${roomData.code}").remove();
+      path += "1";
+      await FirebaseDatabase.instance.ref(path).remove();
     }
-    await FirebaseDatabase.instance.ref(path).remove();
   }
 
   Future<bool> isRoomExist(int roomCode) async {
+    showJoinLoading = true;
+    notifyListeners();
+
     String path = "$roomPath$roomCode";
     DatabaseEvent databaseEvent =
         await FirebaseDatabase.instance.ref(path).once();
+
+    showJoinLoading = false;
+    notifyListeners();
 
     return databaseEvent.snapshot.value != null;
   }

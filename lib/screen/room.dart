@@ -107,6 +107,7 @@ class _RoomScreenState extends State<RoomScreen> {
                       builder: (context, roomProvider, loginProvider, _) {
                     return MyButton(
                       onPressed: () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
                         int roomCodeInput = int.parse(roomCodeController.text);
                         bool isRoomExist =
                             await roomProvider.isRoomExist(roomCodeInput);
@@ -117,22 +118,31 @@ class _RoomScreenState extends State<RoomScreen> {
                             gravity: ToastGravity.CENTER,
                           );
                         } else {
-                          int roomCode = await roomProvider.joinRoom(
+                          await roomProvider.joinRoom(
                             loginProvider.getUserData,
                             roomCodeInput,
                             widget,
                           );
 
-                          navigation.changeScreenReplacement(
+                          bool isRoomOwner = false;
+                          navigation
+                              .changeScreenReplacement(
                             GameScreenController(
-                              roomCode: roomCode,
-                              isRoomOwner: false,
+                              roomCode: roomCodeInput,
+                              isRoomOwner: isRoomOwner,
                             ),
                             widget,
-                          );
+                          )
+                              .then((value) async {
+                            /// delete the room;
+                            await Future.delayed(
+                                const Duration(milliseconds: 800));
+                            roomProvider.leaveRoom(roomCodeInput, isRoomOwner);
+                          });
                         }
                       },
                       text: "Join",
+                      showLoading: roomProvider.showJoinLoading,
                     );
                   }),
                 ),
@@ -164,13 +174,21 @@ class _RoomScreenState extends State<RoomScreen> {
                           widget,
                         );
 
-                        navigation.changeScreenReplacement(
+                        bool isRoomOwner = true;
+                        navigation
+                            .changeScreenReplacement(
                           GameScreenController(
                             roomCode: roomCode,
-                            isRoomOwner: true,
+                            isRoomOwner: isRoomOwner,
                           ),
                           widget,
-                        );
+                        )
+                            .then((value) async {
+                          /// delete the room;
+                          await Future.delayed(
+                              const Duration(milliseconds: 800));
+                          roomProvider.leaveRoom(roomCode, isRoomOwner);
+                        });
                       },
                       text: "Create room",
                       showLoading: roomProvider.loading,
