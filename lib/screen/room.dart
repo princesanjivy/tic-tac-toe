@@ -2,11 +2,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:tic_tac_toe/check_win.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/room.dart';
@@ -291,13 +291,12 @@ class GameScreenController extends StatelessWidget {
 
             if (roomData.isStarted) {
               print("Current board: ${roomData.board}");
-
-              // TODO: implement below in GameScreen
+              int player = PlaySymbol.inNum(
+                roomData.turn == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x,
+              );
               Result result = checkWin(
                 roomData.board,
-                PlaySymbol.inNum(
-                  roomData.turn == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x,
-                ),
+                player,
                 getBoardSize(roomData.board),
               );
               if (result.hasWon || !roomData.board.contains(0)) {
@@ -317,7 +316,12 @@ class GameScreenController extends StatelessWidget {
                     ),
                   );
                 });
-                gameProvider.resetBoard("$roomPath${roomData.code}", context);
+                gameProvider.resetBoard(
+                  "$roomPath${roomData.code}",
+                  roomData,
+                  player,
+                  context,
+                );
               }
 
               return GameScreen(

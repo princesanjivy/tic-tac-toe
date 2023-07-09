@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/board.dart';
-import 'package:tic_tac_toe/check_win.dart';
+import 'package:tic_tac_toe/helper/check_win.dart';
 
 class GameRoom extends StatefulWidget {
   const GameRoom({super.key});

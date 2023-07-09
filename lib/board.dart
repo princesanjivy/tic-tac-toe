@@ -1,8 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:tic_tac_toe/check_win.dart';
 
 class Board extends StatefulWidget {
   const Board({super.key, required this.turn});

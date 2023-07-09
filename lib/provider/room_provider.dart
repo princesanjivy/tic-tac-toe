@@ -3,6 +3,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/random_gen.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
@@ -25,7 +26,7 @@ class RoomProvider with ChangeNotifier {
 
     // int code = generateRandomRoomCode();
     int code = 123465; // for testing;
-    List board = List.generate(9, (index) => 0);
+    List board = List.generate(generateRandomBoardSize(), (index) => 0);
     print("board: $board");
 
     player.chose = PlaySymbol.x;

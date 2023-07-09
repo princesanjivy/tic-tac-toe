@@ -3,6 +3,7 @@ class Player {
   final String playerId;
   final String displayPicture;
   String chose = "";
+  int winCount = 0;
 
   Player(
     this.name,
@@ -13,6 +14,7 @@ class Player {
   Player.fromRoomDataJson(json)
       : chose = json!["chose"],
         playerId = json!["id"],
+        winCount = json!["winCount"],
         displayPicture = "",
 
         /// temp
@@ -28,6 +30,7 @@ class Player {
   Map<String, dynamic> toJson() => {
         "id": playerId,
         "chose": chose,
+        "winCount": winCount,
       };
 
   Map<String, dynamic> toDbJson() => {

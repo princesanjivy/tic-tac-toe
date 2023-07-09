@@ -2,10 +2,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:tic_tac_toe/check_win.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
@@ -107,14 +107,13 @@ class _GameScreenState extends State<GameScreen> {
                     PlayerCard(
                       imageUrl: loginProvider.getUserData.displayPicture,
                       name:
-                      "You (${widget.roomData.players[!widget.isRoomOwner
-                          ? 1
-                          : 0].chose})",
+                          "You (${widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose})",
                       showScore: true,
-                      scoreValue: 0,
+                      scoreValue: widget.roomData
+                          .players[!widget.isRoomOwner ? 1 : 0].winCount,
                     ),
                     Text(
-                      "Round\n1",
+                      "Round\n${widget.roomData.round}",
                       style: GoogleFonts.hennyPenny(
                         fontSize: defaultTextSize - 2,
                         color: primaryColor,
@@ -131,10 +130,10 @@ class _GameScreenState extends State<GameScreen> {
                         return PlayerCard(
                           imageUrl: snapshot.data!.displayPicture,
                           name:
-                          "${snapshot.data!.name} (${widget.roomData
-                              .players[widget.isRoomOwner ? 1 : 0].chose})",
+                              "${snapshot.data!.name.split(" ")[0]} (${widget.roomData.players[widget.isRoomOwner ? 1 : 0].chose})",
                           showScore: true,
-                          scoreValue: 0,
+                          scoreValue: widget.roomData
+                              .players[widget.isRoomOwner ? 1 : 0].winCount,
                         );
                       },
                     ),
@@ -185,18 +184,18 @@ class _GameScreenState extends State<GameScreen> {
                                         .chose) {
                               FirebaseDatabase.instance
                                   .ref(
-                                "$roomPath${widget.roomData.code}/board/$index",
-                              )
+                                    "$roomPath${widget.roomData.code}/board/$index",
+                                  )
                                   .set(PlaySymbol.inNum(widget.roomData.turn));
                               FirebaseDatabase.instance
                                   .ref(
-                                "$roomPath${widget.roomData.code}/turn",
-                              )
+                                    "$roomPath${widget.roomData.code}/turn",
+                                  )
                                   .set(
-                                widget.roomData.turn == PlaySymbol.x
-                                    ? PlaySymbol.o
-                                    : PlaySymbol.x,
-                              );
+                                    widget.roomData.turn == PlaySymbol.x
+                                        ? PlaySymbol.o
+                                        : PlaySymbol.x,
+                                  );
                             }
                           },
                           child: Container(
@@ -217,9 +216,9 @@ class _GameScreenState extends State<GameScreen> {
                                 widget.roomData.board[index] == PlaySymbol.xInt
                                     ? PlaySymbol.x
                                     : widget.roomData.board[index] ==
-                                    PlaySymbol.oInt
-                                    ? PlaySymbol.o
-                                    : "",
+                                            PlaySymbol.oInt
+                                        ? PlaySymbol.o
+                                        : "",
                                 style: GoogleFonts.hennyPenny(
                                   fontSize: 42 - 8,
                                   color: widget.result.positions.contains(index)
@@ -237,15 +236,15 @@ class _GameScreenState extends State<GameScreen> {
                 const VerticalSpacer(4),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: secondaryColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     (widget.roomData.turn ==
-                        widget.roomData.players[!widget.isRoomOwner ? 1 : 0]
-                            .chose)
+                            widget.roomData.players[!widget.isRoomOwner ? 1 : 0]
+                                .chose)
                         ? "Your turn"
                         : "Opponent turn",
                     style: TextStyle(
