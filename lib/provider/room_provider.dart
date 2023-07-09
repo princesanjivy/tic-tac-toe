@@ -25,10 +25,8 @@ class RoomProvider with ChangeNotifier {
 
     // int code = generateRandomRoomCode();
     int code = 123465; // for testing;
-    List<Map<int, int>> board = [
-      {0: 0},
-      {1: 0},
-    ];
+    List board = List.generate(9, (index) => 0);
+    print("board: $board");
 
     player.chose = PlaySymbol.x;
     List<Player> players = [];
@@ -40,6 +38,7 @@ class RoomProvider with ChangeNotifier {
       PlaySymbol.x,
       players,
       board,
+      1,
     );
 
     await FirebaseDatabase.instance

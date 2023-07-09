@@ -7,6 +7,7 @@ import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
@@ -297,12 +298,14 @@ class GameScreenController extends StatelessWidget {
                 PlaySymbol.inNum(
                   roomData.turn == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x,
                 ),
+                getBoardSize(roomData.board),
               );
               if (result.hasWon || !roomData.board.contains(0)) {
                 print("Game over");
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showDialog(
                     context: context,
+                    barrierDismissible: false,
                     builder: (context) => const SimpleDialog(
                       children: [
                         Padding(

@@ -9,12 +9,15 @@ class RoomData {
   final List<Player> players;
   final List board;
 
+  final int round;
+
   RoomData(
     this.code,
     this.roomOwnerId,
     this.turn,
     this.players,
     this.board,
+    this.round,
   );
 
   factory RoomData.fromJson(json, int code) {
@@ -24,7 +27,13 @@ class RoomData {
     });
 
     RoomData roomData = RoomData(
-        code, json!["roomOwnerId"], json!["turn"], players, json!["board"]);
+      code,
+      json!["roomOwnerId"],
+      json!["turn"],
+      players,
+      json!["board"],
+      json!["round"],
+    );
     roomData.isStarted = json!["isStarted"];
 
     return roomData;
@@ -44,32 +53,7 @@ class RoomData {
         "turn": turn,
         "isStarted": isStarted,
         "players": playersToJson(players),
-        "board": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
+        "board": board,
+        "round": round,
       };
 }

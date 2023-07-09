@@ -11,6 +11,7 @@ import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
+import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
@@ -173,9 +174,28 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                   );
                                 },
                               )
-                            : PlayerCard(
-                                imageUrl: imageUrl,
-                                name: "Opponent",
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      color: bgColor,
+                                      borderRadius: BorderRadius.circular(100),
+                                      boxShadow: shadow,
+                                    ),
+                                  ),
+                                  const VerticalSpacer(16),
+                                  Text(
+                                    "Waiting for\nopponent",
+                                    style: TextStyle(
+                                      fontSize: defaultTextSize,
+                                      color: secondaryColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
                       ],
                     ),
@@ -203,7 +223,8 @@ class _LobbyScreenState extends State<LobbyScreen> {
                             : Container()
                         : const VerticalSpacer(8),
 
-                    Consumer<RoomProvider>(builder: (context, roomProvider, _) {
+                    Consumer2<RoomProvider, GameProvider>(
+                        builder: (context, roomProvider, gameProvider, _) {
                       return MyButton(
                         text: widget.roomData.players.length == 2
                             ? widget.isRoomOwner
@@ -212,6 +233,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                             : "Waiting...",
                         onPressed: () {
                           if (widget.isRoomOwner) {
+                            // gameProvider.designBoard(widget.roomData.board);
                             roomProvider.isStarted(true, widget.roomData.code);
                           } else {
                             Fluttertoast.showToast(

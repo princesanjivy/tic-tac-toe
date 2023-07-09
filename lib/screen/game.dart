@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,9 +6,11 @@ import 'package:tic_tac_toe/check_win.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
+import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 
 class GameScreen extends StatefulWidget {
@@ -45,26 +45,54 @@ class GameScreen extends StatefulWidget {
 // 20 21 22 23 24
 
 class _GameScreenState extends State<GameScreen> {
-  List<int> corners = [0, 4, 20, 24];
-  Map<int, BorderRadiusGeometry> borders = {
-    0: const BorderRadius.only(
-      topLeft: Radius.circular(16),
-    ),
-    4: const BorderRadius.only(
-      topRight: Radius.circular(16),
-    ),
-    20: const BorderRadius.only(
-      bottomLeft: Radius.circular(16),
-    ),
-    24: const BorderRadius.only(
-      bottomRight: Radius.circular(16),
-    ),
-  };
+  // List<int> corners = [0, 4, 20, 24];
+  // Map<int, BorderRadiusGeometry> borders = {
+  //   0: const BorderRadius.only(
+  //     topLeft: Radius.circular(16),
+  //   ),
+  //   4: const BorderRadius.only(
+  //     topRight: Radius.circular(16),
+  //   ),
+  //   20: const BorderRadius.only(
+  //     bottomLeft: Radius.circular(16),
+  //   ),
+  //   24: const BorderRadius.only(
+  //     bottomRight: Radius.circular(16),
+  //   ),
+  // };
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   change();
+  // }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // nameless(){
+    GameProvider gameProvider = Provider.of<GameProvider>(context);
+    gameProvider.designBoard(widget.roomData.board);
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LoginProvider>(
-      builder: (context, loginProvider, _) {
+    return Consumer2<LoginProvider, GameProvider>(
+      builder: (context, loginProvider, gameProvider, _) {
+        // if (gameProvider.showLoading) {
+        //   return Scaffold(
+        //     backgroundColor: bgColor,
+        //     body: Center(
+        //       child: CircularProgressIndicator(
+        //         color: primaryColor,
+        //         strokeWidth: 2,
+        //       ),
+        //     ),
+        //   );
+        // }
         return Scaffold(
           backgroundColor: bgColor,
           body: Center(
@@ -79,7 +107,9 @@ class _GameScreenState extends State<GameScreen> {
                     PlayerCard(
                       imageUrl: loginProvider.getUserData.displayPicture,
                       name:
-                          "You (${widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose})",
+                      "You (${widget.roomData.players[!widget.isRoomOwner
+                          ? 1
+                          : 0].chose})",
                       showScore: true,
                       scoreValue: 0,
                     ),
@@ -101,7 +131,8 @@ class _GameScreenState extends State<GameScreen> {
                         return PlayerCard(
                           imageUrl: snapshot.data!.displayPicture,
                           name:
-                              "${snapshot.data!.name} (${widget.roomData.players[widget.isRoomOwner ? 1 : 0].chose})",
+                          "${snapshot.data!.name} (${widget.roomData
+                              .players[widget.isRoomOwner ? 1 : 0].chose})",
                           showScore: true,
                           scoreValue: 0,
                         );
@@ -132,8 +163,7 @@ class _GameScreenState extends State<GameScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount:
-                            sqrt(widget.roomData.board.length).toInt(),
+                        crossAxisCount: getBoardSize(widget.roomData.board),
                         mainAxisSpacing: 1,
                         crossAxisSpacing: 1,
                         // childAspectRatio: 1,
@@ -155,18 +185,18 @@ class _GameScreenState extends State<GameScreen> {
                                         .chose) {
                               FirebaseDatabase.instance
                                   .ref(
-                                    "$roomPath${widget.roomData.code}/board/$index",
-                                  )
+                                "$roomPath${widget.roomData.code}/board/$index",
+                              )
                                   .set(PlaySymbol.inNum(widget.roomData.turn));
                               FirebaseDatabase.instance
                                   .ref(
-                                    "$roomPath${widget.roomData.code}/turn",
-                                  )
+                                "$roomPath${widget.roomData.code}/turn",
+                              )
                                   .set(
-                                    widget.roomData.turn == PlaySymbol.x
-                                        ? PlaySymbol.o
-                                        : PlaySymbol.x,
-                                  );
+                                widget.roomData.turn == PlaySymbol.x
+                                    ? PlaySymbol.o
+                                    : PlaySymbol.x,
+                              );
                             }
                           },
                           child: Container(
@@ -178,8 +208,8 @@ class _GameScreenState extends State<GameScreen> {
                                 color: primaryColor,
                                 // width: 2,
                               ),
-                              borderRadius: corners.contains(index)
-                                  ? borders[index]
+                              borderRadius: gameProvider.corners.contains(index)
+                                  ? gameProvider.borders[index]
                                   : null,
                             ),
                             child: Center(
@@ -187,9 +217,9 @@ class _GameScreenState extends State<GameScreen> {
                                 widget.roomData.board[index] == PlaySymbol.xInt
                                     ? PlaySymbol.x
                                     : widget.roomData.board[index] ==
-                                            PlaySymbol.oInt
-                                        ? PlaySymbol.o
-                                        : "",
+                                    PlaySymbol.oInt
+                                    ? PlaySymbol.o
+                                    : "",
                                 style: GoogleFonts.hennyPenny(
                                   fontSize: 42 - 8,
                                   color: widget.result.positions.contains(index)
@@ -207,15 +237,15 @@ class _GameScreenState extends State<GameScreen> {
                 const VerticalSpacer(4),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: secondaryColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     (widget.roomData.turn ==
-                            widget.roomData.players[!widget.isRoomOwner ? 1 : 0]
-                                .chose)
+                        widget.roomData.players[!widget.isRoomOwner ? 1 : 0]
+                            .chose)
                         ? "Your turn"
                         : "Opponent turn",
                     style: TextStyle(

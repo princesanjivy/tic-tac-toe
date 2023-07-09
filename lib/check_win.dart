@@ -5,9 +5,9 @@ class Result {
   Result(this.hasWon, this.positions);
 }
 
-Result checkWin(List board, int player) {
-  int size =
-      (board.length / 5).round(); // Calculate the size of the square board
+Result checkWin(List board, int player, int size) {
+  // int size =
+  //     (board.length / 5).round(); // Calculate the size of the square board
 
   // Check rows
   for (int i = 0; i < size; i++) {

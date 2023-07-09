@@ -1,6 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/board.dart';
 import 'package:tic_tac_toe/check_win.dart';
 
@@ -20,8 +19,8 @@ class _GameRoomState extends State<GameRoom> {
     super.initState();
 
     /// test chechWin
-    List<int> board = [0,1,2,2,1,1,2,1,0];
-    print(checkWin(board, 1));
+    List<int> board = [0, 1, 2, 2, 1, 1, 2, 1, 0];
+    print(checkWin(board, 1, 3));
   }
 
   @override
@@ -116,4 +115,3 @@ class _GameRoomState extends State<GameRoom> {
     );
   }
 }
-
