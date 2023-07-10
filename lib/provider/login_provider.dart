@@ -18,7 +18,10 @@ class LoginProvider with ChangeNotifier {
 
   Future<UserCredential> loginWithGoogle() async {
     loading = true;
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn(
+            clientId:
+                "1052229586554-sfgsc4r16hsce5l5f4d4rrrc2cu24lqg.apps.googleusercontent.com")
+        .signIn();
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 

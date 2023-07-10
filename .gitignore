@@ -47,3 +47,5 @@ app.*.map.json
 /android/app/google-services.json
 
 pubspec.lock
+
+/web/index.html

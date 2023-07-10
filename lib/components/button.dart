@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
@@ -23,7 +24,9 @@ class MyButton extends StatelessWidget {
       onPressed: showLoading
           ? null
           : () {
-              Vibration.vibrate(duration: 80, amplitude: 120);
+              if (!kIsWeb) {
+                Vibration.vibrate(duration: 80, amplitude: 120);
+              }
               AudioController.buttonClick("audio/click2.ogg");
               onPressed();
             },

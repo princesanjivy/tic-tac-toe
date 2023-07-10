@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -149,8 +150,8 @@ class _GameScreenState extends State<GameScreen> {
                 Padding(
                   padding: const EdgeInsets.all(32),
                   child: Container(
-                    // width: 300,
-                    // height: 300,
+                    width: kIsWeb ? 500 : null,
+                    height: kIsWeb ? 500 : null,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(

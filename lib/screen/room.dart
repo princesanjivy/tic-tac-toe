@@ -320,6 +320,7 @@ class GameScreenController extends StatelessWidget {
                   "$roomPath${roomData.code}",
                   roomData,
                   player,
+                  isRoomOwner,
                   context,
                 );
               }

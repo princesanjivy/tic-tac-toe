@@ -25,33 +25,43 @@ class GameProvider with ChangeNotifier {
   }
 
   void resetBoard(String refPath, RoomData roomData, int player,
-      BuildContext context) async {
-    List board = List.generate(generateRandomBoardSize(), (index) => 0);
-
+      bool isRoomOwner, BuildContext context) async {
     await Future.delayed(
       const Duration(seconds: 5),
-          () {
-        designBoard(board);
-        FirebaseDatabase.instance.ref(refPath).update({
-          // "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-          "board": board,
-          "round": roomData.round + 1,
-        });
-        print(
-            "$roomPath${roomData.code}/players/${player == PlaySymbol.xInt
-                ? 0
-                : 1}");
-        FirebaseDatabase.instance
-            .ref(
-            "$roomPath${roomData.code}/players/${player == PlaySymbol.xInt
-                ? 0
-                : 1}")
-            .update({
-          "winCount":
-          roomData.players[player == PlaySymbol.xInt ? 0 : 1].winCount + 1,
-        });
+      () async {
+        late List board;
+        if (isRoomOwner) {
+          board = List.generate(generateRandomBoardSize(), (index) => 0);
+          print("Reset board: $board");
 
-        Navigator.pop(context);
+          FirebaseDatabase.instance.ref(refPath).update({
+            // "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "board": board,
+            "round": roomData.round + 1,
+          });
+
+          FirebaseDatabase.instance
+              .ref(
+                  "$roomPath${roomData.code}/players/${player == PlaySymbol.xInt ? 0 : 1}")
+              .update({
+            "winCount":
+                roomData.players[player == PlaySymbol.xInt ? 0 : 1].winCount +
+                    1,
+          });
+          designBoard(board);
+
+          Navigator.pop(context);
+        } else {
+          // TODO: change designBoard to const to avoid this call to fb.
+          DatabaseEvent databaseEvent =
+              await FirebaseDatabase.instance.ref(refPath + "/board").once();
+          board = databaseEvent.snapshot.value as List;
+          print("Reset board: $board");
+          designBoard(
+              board); // TODO: remove this to get rid of state error during build
+
+          Navigator.pop(context);
+        }
       },
     );
   }
@@ -80,6 +90,6 @@ class GameProvider with ChangeNotifier {
     }
 
     // showLoading = false;
-    // notifyListeners();
+    notifyListeners();
   }
 }
