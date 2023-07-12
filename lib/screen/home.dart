@@ -11,6 +11,7 @@ import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
+import 'package:tic_tac_toe/screen/single_mode.dart';
 import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
@@ -103,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           print("Player vs AI mode");
                           navigation.changeScreenReplacement(
-                            const RoomScreen(),
+                            const SingleModeScreen(),
                             widget,
                           );
                           // buttonClickPlayer

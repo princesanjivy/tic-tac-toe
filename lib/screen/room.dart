@@ -6,7 +6,7 @@ import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
-import 'package:tic_tac_toe/helper/check_win.dart';
+import 'package:tic_tac_toe/helper/check_win.dart' as helper;
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/room.dart';
@@ -294,7 +294,7 @@ class GameScreenController extends StatelessWidget {
               int player = PlaySymbol.inNum(
                 roomData.turn == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x,
               );
-              Result result = checkWin(
+              helper.Result result = helper.checkWin(
                 roomData.board,
                 player,
                 getBoardSize(roomData.board),
