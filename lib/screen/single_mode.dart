@@ -8,7 +8,6 @@ import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
-import 'package:tic_tac_toe/helper/random_gen.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:vibration/vibration.dart';
@@ -22,20 +21,22 @@ class SingleModeScreen extends StatefulWidget {
 }
 
 class _SingleModeScreenState extends State<SingleModeScreen> {
-  List<int> corners = [0, 2, 6, 8];
-  List board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  List<int> corners = [0, 3, 12, 15];
+
+  // List board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  List board = List.generate(16, (index) => 0);
 
   Map<int, BorderRadiusGeometry> borders = {
     0: const BorderRadius.only(
       topLeft: Radius.circular(16),
     ),
-    2: const BorderRadius.only(
+    3: const BorderRadius.only(
       topRight: Radius.circular(16),
     ),
-    6: const BorderRadius.only(
+    12: const BorderRadius.only(
       bottomLeft: Radius.circular(16),
     ),
-    8: const BorderRadius.only(
+    15: const BorderRadius.only(
       bottomRight: Radius.circular(16),
     ),
   };
@@ -53,8 +54,8 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
   void initState() {
     super.initState();
 
-    playerChose = generateRandomPlaySymbol();
-    // playerChose = PlaySymbol.x;
+    // playerChose = generateRandomPlaySymbol();
+    playerChose = PlaySymbol.x;
     if (playerChose == PlaySymbol.x) {
       aiChose = PlaySymbol.o;
     } else {
@@ -64,8 +65,8 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
   }
 
   playAi(String t) async {
-    await Future.delayed(const Duration(milliseconds: 800), () {
-      int index = findBestMove(board, PlaySymbol.inNum(t));
+    await Future.delayed(const Duration(milliseconds: 600), () {
+      int index = findBestMove(board, PlaySymbol.inNum(t), getBoardSize(board));
       bool skipCheck = false;
       {
         if (index == -1) {
@@ -88,8 +89,8 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
   }
 
   printOverMsg(t) async {
-    Result resultX = checkWin(board, PlaySymbol.xInt, 3);
-    Result resultO = checkWin(board, PlaySymbol.oInt, 3);
+    Result resultX = checkWin(board, PlaySymbol.xInt, getBoardSize(board));
+    Result resultO = checkWin(board, PlaySymbol.oInt, getBoardSize(board));
 
     if (resultX.hasWon) {
       print("Player 1 (X) wins!");
@@ -116,7 +117,8 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
       ),
     );
     await Future.delayed(const Duration(seconds: 5), () {
-      board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      // board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      board = List.generate(16, (index) => 0);
       result = Result(false, []);
       turn = (t == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x);
 
