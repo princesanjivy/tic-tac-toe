@@ -14,6 +14,7 @@ import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
+import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/game.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:tic_tac_toe/screen/lobby.dart';
@@ -43,93 +44,147 @@ class _RoomScreenState extends State<RoomScreen> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Enter room code and join with your friend",
-                  style: TextStyle(
-                    fontSize: defaultTextSize,
-                    color: secondaryColor,
-                  ),
-                ),
-                const VerticalSpacer(32),
-                Material(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: primaryColor,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
+    return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
+      return Scaffold(
+        backgroundColor: themeProvider.bgColor,
+        body: Stack(
+          children: [
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Enter room code and join with your friend",
+                    style: TextStyle(
+                      fontSize: defaultTextSize,
+                      color: themeProvider.secondaryColor,
                     ),
                   ),
-                  child: SizedBox(
-                    height: 48,
-                    width: width / 1.6,
-                    child: TextField(
-                      controller: roomCodeController,
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 18,
+                  const VerticalSpacer(32),
+                  Material(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: themeProvider.primaryColor,
+                        width: 2,
                       ),
-                      maxLines: 1,
-                      // maxLength: 6,
-                      textAlign: TextAlign.center,
-                      textAlignVertical: TextAlignVertical.center,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: bgColor,
-                        border: OutlineInputBorder(borderSide: BorderSide.none),
-                        contentPadding: EdgeInsets.zero,
-                        hintText: "Enter room code",
-                        hintStyle: TextStyle(
-                          color: primaryColor,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                    child: SizedBox(
+                      height: 48,
+                      width: width / 1.6,
+                      child: TextField(
+                        controller: roomCodeController,
+                        style: TextStyle(
+                          color: themeProvider.primaryColor,
                           fontSize: 18,
+                        ),
+                        maxLines: 1,
+                        // maxLength: 6,
+                        textAlign: TextAlign.center,
+                        textAlignVertical: TextAlignVertical.center,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: themeProvider.bgColor,
+                          border:
+                              OutlineInputBorder(borderSide: BorderSide.none),
+                          contentPadding: EdgeInsets.zero,
+                          hintText: "Enter room code",
+                          hintStyle: TextStyle(
+                            color: themeProvider.primaryColor,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const VerticalSpacer(16),
-                WidgetAnimator(
-                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                    delay: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
+                  const VerticalSpacer(16),
+                  WidgetAnimator(
+                    incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                      delay: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                    ),
+                    child: Consumer2<RoomProvider, LoginProvider>(
+                        builder: (context, roomProvider, loginProvider, _) {
+                      return MyButton(
+                        onPressed: () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          int roomCodeInput =
+                              int.parse(roomCodeController.text);
+                          bool isRoomExist =
+                              await roomProvider.isRoomExist(roomCodeInput);
+                          if (!isRoomExist) {
+                            Fluttertoast.showToast(
+                              msg: "Room doesn't exist",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.CENTER,
+                            );
+                          } else {
+                            await roomProvider.joinRoom(
+                              loginProvider.getUserData,
+                              roomCodeInput,
+                              widget,
+                            );
+
+                            bool isRoomOwner = false;
+                            navigation
+                                .changeScreenReplacement(
+                              GameScreenController(
+                                roomCode: roomCodeInput,
+                                isRoomOwner: isRoomOwner,
+                              ),
+                              widget,
+                            )
+                                .then((value) async {
+                              /// delete the room;
+                              await Future.delayed(
+                                  const Duration(milliseconds: 800));
+                              roomProvider.leaveRoom(
+                                  roomCodeInput, isRoomOwner);
+                            });
+                          }
+                        },
+                        text: "Join",
+                        showLoading: roomProvider.showJoinLoading,
+                      );
+                    }),
                   ),
-                  child: Consumer2<RoomProvider, LoginProvider>(
-                      builder: (context, roomProvider, loginProvider, _) {
-                    return MyButton(
-                      onPressed: () async {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        int roomCodeInput = int.parse(roomCodeController.text);
-                        bool isRoomExist =
-                            await roomProvider.isRoomExist(roomCodeInput);
-                        if (!isRoomExist) {
-                          Fluttertoast.showToast(
-                            msg: "Room doesn't exist",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.CENTER,
-                          );
-                        } else {
-                          await roomProvider.joinRoom(
+                  const VerticalSpacer(32),
+                  TextAnimator(
+                    // TODO: change this animation
+                    "or",
+                    initialDelay: const Duration(milliseconds: 1200),
+                    incomingEffect:
+                        WidgetTransitionEffects.incomingSlideInFromLeft(),
+                    style: TextStyle(
+                      fontSize: defaultTextSize,
+                      color: themeProvider.secondaryColor,
+                    ),
+                  ),
+                  const VerticalSpacer(32),
+                  WidgetAnimator(
+                    incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                      delay: const Duration(milliseconds: 800),
+                      curve: Curves.easeInOut,
+                    ),
+                    atRestEffect: WidgetRestingEffects.wave(),
+                    child: Consumer2<RoomProvider, LoginProvider>(
+                        builder: (context, roomProvider, loginProvider, _) {
+                      return MyButton(
+                        onPressed: () async {
+                          int roomCode = await roomProvider.createRoom(
                             loginProvider.getUserData,
-                            roomCodeInput,
                             widget,
                           );
 
-                          bool isRoomOwner = false;
+                          bool isRoomOwner = true;
                           navigation
                               .changeScreenReplacement(
                             GameScreenController(
-                              roomCode: roomCodeInput,
+                              roomCode: roomCode,
                               isRoomOwner: isRoomOwner,
                             ),
                             widget,
@@ -138,119 +193,70 @@ class _RoomScreenState extends State<RoomScreen> {
                             /// delete the room;
                             await Future.delayed(
                                 const Duration(milliseconds: 800));
-                            roomProvider.leaveRoom(roomCodeInput, isRoomOwner);
+                            roomProvider.leaveRoom(roomCode, isRoomOwner);
                           });
-                        }
-                      },
-                      text: "Join",
-                      showLoading: roomProvider.showJoinLoading,
-                    );
-                  }),
-                ),
-                const VerticalSpacer(32),
-                TextAnimator(
-                  // TODO: change this animation
-                  "or",
-                  initialDelay: const Duration(milliseconds: 1200),
-                  incomingEffect:
-                      WidgetTransitionEffects.incomingSlideInFromLeft(),
-                  style: TextStyle(
-                    fontSize: defaultTextSize,
-                    color: secondaryColor,
+                        },
+                        text: "Create room",
+                        showLoading: roomProvider.loading,
+                      );
+                    }),
                   ),
-                ),
-                const VerticalSpacer(32),
-                WidgetAnimator(
-                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                    delay: const Duration(milliseconds: 800),
-                    curve: Curves.easeInOut,
-                  ),
-                  atRestEffect: WidgetRestingEffects.wave(),
-                  child: Consumer2<RoomProvider, LoginProvider>(
-                      builder: (context, roomProvider, loginProvider, _) {
-                    return MyButton(
-                      onPressed: () async {
-                        int roomCode = await roomProvider.createRoom(
-                          loginProvider.getUserData,
-                          widget,
-                        );
-
-                        bool isRoomOwner = true;
-                        navigation
-                            .changeScreenReplacement(
-                          GameScreenController(
-                            roomCode: roomCode,
-                            isRoomOwner: isRoomOwner,
-                          ),
-                          widget,
-                        )
-                            .then((value) async {
-                          /// delete the room;
-                          await Future.delayed(
-                              const Duration(milliseconds: 800));
-                          roomProvider.leaveRoom(roomCode, isRoomOwner);
-                        });
-                      },
-                      text: "Create room",
-                      showLoading: roomProvider.loading,
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 32,
-            right: 32,
-            child: WidgetAnimator(
-              incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                delay: const Duration(milliseconds: 1200),
-                curve: Curves.easeInOut,
+                ],
               ),
-              child: ElevatedButton(
-                onPressed: () {
-                  Vibration.vibrate(duration: 80, amplitude: 120);
-                  AudioController.buttonClick("audio/click2.ogg");
+            ),
+            Positioned(
+              top: 32,
+              right: 32,
+              child: WidgetAnimator(
+                incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                  delay: const Duration(milliseconds: 1200),
+                  curve: Curves.easeInOut,
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Vibration.vibrate(duration: 80, amplitude: 120);
+                    AudioController.buttonClick("audio/click2.ogg");
 
-                  // Navigation.goBack(context);
-                  navigation.changeScreenReplacement(
-                    const HomeScreen(),
-                    widget,
-                  );
-                },
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(
-                    const Size(48, 48),
-                  ),
-                  elevation: MaterialStateProperty.all<double>(4),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    // Navigation.goBack(context);
+                    navigation.changeScreenReplacement(
+                      const HomeScreen(),
+                      widget,
+                    );
+                  },
+                  style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all<Size>(
+                      const Size(48, 48),
                     ),
+                    elevation: MaterialStateProperty.all<double>(4),
+                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                        const EdgeInsets.all(0)),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        themeProvider.primaryColor),
                   ),
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.all(0)),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(primaryColor),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded, // TODO: temp icon
+                    color: themeProvider.bgColor,
+                  ),
+                  // child: Text(
+                  //   "i",
+                  //   style: TextStyle(
+                  //     fontSize: defaultTextSize,
+                  //     color: bgColor,
+                  //     letterSpacing: 1,
+                  //   ),
+                  // ),
                 ),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded, // TODO: temp icon
-                  color: bgColor,
-                ),
-                // child: Text(
-                //   "i",
-                //   style: TextStyle(
-                //     fontSize: defaultTextSize,
-                //     color: bgColor,
-                //     letterSpacing: 1,
-                //   ),
-                // ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -266,18 +272,18 @@ class GameScreenController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GameProvider>(
+    return Consumer2<GameProvider, ThemeProvider>(
       // TODO: remove this if not needed
-      builder: (context, gameProvider, _) {
+      builder: (context, gameProvider, themeProvider, _) {
         return StreamBuilder<DatabaseEvent>(
           stream: FirebaseDatabase.instance.ref("$roomPath$roomCode/").onValue,
           builder: (context, db) {
             if (!db.hasData) {
               return Scaffold(
-                backgroundColor: bgColor,
+                backgroundColor: themeProvider.bgColor,
                 body: Center(
                   child: CircularProgressIndicator(
-                    color: primaryColor,
+                    color: themeProvider.primaryColor,
                     strokeWidth: 2,
                   ),
                 ),

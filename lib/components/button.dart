@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:vibration/vibration.dart';
 
 class MyButton extends StatelessWidget {
@@ -40,18 +42,20 @@ class MyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        backgroundColor: MaterialStateProperty.all<Color>(primaryColor),
+        backgroundColor: MaterialStateProperty.all<Color>(
+            Provider.of<ThemeProvider>(context, listen: true).primaryColor),
       ),
       child: showLoading
           ? CircularProgressIndicator(
-              color: bgColor,
+              color: Provider.of<ThemeProvider>(context, listen: true).bgColor,
               strokeWidth: 2,
             )
           : Text(
               text,
               style: TextStyle(
                 fontSize: defaultTextSize,
-                color: bgColor,
+                color:
+                    Provider.of<ThemeProvider>(context, listen: true).bgColor,
                 letterSpacing: 1,
               ),
             ),

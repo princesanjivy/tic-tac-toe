@@ -13,6 +13,7 @@ import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
+import 'package:tic_tac_toe/provider/theme_provider.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -81,8 +82,8 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<LoginProvider, GameProvider>(
-      builder: (context, loginProvider, gameProvider, _) {
+    return Consumer3<LoginProvider, GameProvider, ThemeProvider>(
+      builder: (context, loginProvider, gameProvider, themeProvider, _) {
         // if (gameProvider.showLoading) {
         //   return Scaffold(
         //     backgroundColor: bgColor,
@@ -95,7 +96,7 @@ class _GameScreenState extends State<GameScreen> {
         //   );
         // }
         return Scaffold(
-          backgroundColor: bgColor,
+          backgroundColor: themeProvider.bgColor,
           body: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,7 +118,7 @@ class _GameScreenState extends State<GameScreen> {
                       "Round\n${widget.roomData.round}",
                       style: GoogleFonts.hennyPenny(
                         fontSize: defaultTextSize - 2,
-                        color: primaryColor,
+                        color: themeProvider.primaryColor,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -126,7 +127,8 @@ class _GameScreenState extends State<GameScreen> {
                           .players[widget.isRoomOwner ? 1 : 0].playerId),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return CircularProgressIndicator(color: bgColor);
+                          return CircularProgressIndicator(
+                              color: themeProvider.bgColor);
                         }
                         return PlayerCard(
                           imageUrl: snapshot.data!.displayPicture,
@@ -155,7 +157,7 @@ class _GameScreenState extends State<GameScreen> {
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: primaryColor,
+                      color: themeProvider.primaryColor,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: GridView.builder(
@@ -203,9 +205,9 @@ class _GameScreenState extends State<GameScreen> {
                             decoration: BoxDecoration(
                               color: widget.result.positions.contains(index)
                                   ? Colors.deepOrange.withOpacity(0.8)
-                                  : bgColor,
+                                  : themeProvider.bgColor,
                               border: Border.all(
-                                color: primaryColor,
+                                color: themeProvider.primaryColor,
                                 // width: 2,
                               ),
                               borderRadius: gameProvider.corners.contains(index)
@@ -223,8 +225,8 @@ class _GameScreenState extends State<GameScreen> {
                                 style: GoogleFonts.hennyPenny(
                                   fontSize: 42 - 8,
                                   color: widget.result.positions.contains(index)
-                                      ? bgColor
-                                      : primaryColor,
+                                      ? themeProvider.bgColor
+                                      : themeProvider.primaryColor,
                                 ),
                               ),
                             ),
@@ -239,7 +241,7 @@ class _GameScreenState extends State<GameScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: secondaryColor,
+                    color: themeProvider.secondaryColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -250,7 +252,7 @@ class _GameScreenState extends State<GameScreen> {
                         : "Opponent turn",
                     style: TextStyle(
                       fontSize: defaultTextSize,
-                      color: bgColor,
+                      color: themeProvider.bgColor,
                     ),
                   ),
                 ),

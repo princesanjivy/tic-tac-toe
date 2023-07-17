@@ -14,6 +14,7 @@ import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
+import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
 import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -44,10 +45,10 @@ class _LobbyScreenState extends State<LobbyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LoginProvider>(
-      builder: (context, loginProvider, _) {
+    return Consumer2<LoginProvider, ThemeProvider>(
+      builder: (context, loginProvider, themeProvider, _) {
         return Scaffold(
-          backgroundColor: bgColor,
+          backgroundColor: themeProvider.bgColor,
           body: Stack(
             children: [
               Center(
@@ -63,10 +64,10 @@ class _LobbyScreenState extends State<LobbyScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(borderRadius),
                           border: Border.all(
-                            color: primaryColor,
+                            color: themeProvider.primaryColor,
                             width: 2,
                           ),
-                          color: bgColor,
+                          color: themeProvider.bgColor,
                           boxShadow: shadow,
                         ),
                         child: Stack(
@@ -78,7 +79,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                   "Share this room code\nwith your friend",
                                   style: TextStyle(
                                     fontSize: defaultTextSize,
-                                    color: secondaryColor,
+                                    color: themeProvider.secondaryColor,
                                   ),
                                 ),
                                 const VerticalSpacer(12),
@@ -86,7 +87,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                   "${widget.roomData.code}",
                                   style: GoogleFonts.hennyPenny(
                                     fontSize: 24,
-                                    color: primaryColor,
+                                    color: themeProvider.primaryColor,
                                   ),
                                 ),
                               ],
@@ -119,11 +120,11 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                           const EdgeInsets.all(0)),
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
-                                          primaryColor),
+                                          themeProvider.primaryColor),
                                 ),
                                 child: Icon(
                                   Icons.share_rounded,
-                                  color: bgColor,
+                                  color: themeProvider.bgColor,
                                 ),
                                 // child: Text(
                                 //   "i",
@@ -154,7 +155,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                           "vs",
                           style: GoogleFonts.hennyPenny(
                             fontSize: defaultTextSize,
-                            color: primaryColor,
+                            color: themeProvider.primaryColor,
                           ),
                         ),
                         widget.roomData.players.length == 2
@@ -166,7 +167,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                 builder: (context, snapshot) {
                                   if (!snapshot.hasData) {
                                     return CircularProgressIndicator(
-                                        color: bgColor);
+                                        color: themeProvider.bgColor);
                                   }
                                   return PlayerCard(
                                     imageUrl: snapshot.data!.displayPicture,
@@ -181,7 +182,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                     width: 100,
                                     height: 100,
                                     decoration: BoxDecoration(
-                                      color: bgColor,
+                                      color: themeProvider.bgColor,
                                       borderRadius: BorderRadius.circular(100),
                                       boxShadow: shadow,
                                     ),
@@ -191,7 +192,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                     "Waiting for\nopponent",
                                     style: TextStyle(
                                       fontSize: defaultTextSize,
-                                      color: secondaryColor,
+                                      color: themeProvider.secondaryColor,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -207,14 +208,14 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                 "Wait for Player1 to start the game",
                                 style: TextStyle(
                                   fontSize: defaultTextSize - 4,
-                                  color: secondaryColor,
+                                  color: themeProvider.secondaryColor,
                                 ),
                               )
                         : Text(
                             "Waiting for player to join...",
                             style: TextStyle(
                               fontSize: defaultTextSize - 4,
-                              color: secondaryColor,
+                              color: themeProvider.secondaryColor,
                             ),
                           ),
                     widget.roomData.players.length == 2
@@ -276,7 +277,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                     listen: false);
 
                             return AlertDialog(
-                              backgroundColor: bgColor,
+                              backgroundColor: themeProvider.bgColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -324,12 +325,12 @@ class _LobbyScreenState extends State<LobbyScreen> {
                       ),
                       padding: MaterialStateProperty.all<EdgeInsets>(
                           const EdgeInsets.all(0)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(primaryColor),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          themeProvider.primaryColor),
                     ),
                     child: Icon(
                       Icons.arrow_back_ios_new_rounded, // TODO: temp icon
-                      color: bgColor,
+                      color: themeProvider.bgColor,
                     ),
                     // child: Text(
                     //   "i",
