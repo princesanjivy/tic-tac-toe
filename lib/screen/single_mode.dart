@@ -27,6 +27,8 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
 
   // List board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   List board = List.generate(16, (index) => 0);
+  Map<int, int> scores = {1: 0, 2: 0};
+  int round = 1;
 
   Map<int, BorderRadiusGeometry> borders = {
     0: const BorderRadius.only(
@@ -97,19 +99,24 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
     if (resultX.hasWon) {
       print("Player 1 (X) wins!");
       result = resultX;
+      scores[PlaySymbol.xInt] = scores[PlaySymbol.xInt]! + 1;
     } else if (resultO.hasWon) {
       print("Player 2 (O) wins!");
       result = resultO;
+      scores[PlaySymbol.oInt] = scores[PlaySymbol.oInt]! + 1;
     } else {
       print("It's a draw!");
     }
+
+    round += 1;
 
     setState(() {});
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const SimpleDialog(
+      builder: (context) =>
+      const SimpleDialog(
         children: [
           Padding(
             padding: EdgeInsets.all(8.0),
@@ -157,10 +164,10 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                         name: "You ($playerChose)",
                         isAsset: true,
                         showScore: true,
-                        scoreValue: 0,
+                        scoreValue: scores[PlaySymbol.inNum(playerChose)]!,
                       ),
                       Text(
-                        "Round\n1",
+                        "Round\n$round",
                         style: GoogleFonts.hennyPenny(
                           fontSize: defaultTextSize - 2,
                           color: themeProvider.primaryColor,
@@ -172,7 +179,7 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                         name: "AI ($aiChose)",
                         isAsset: true,
                         showScore: true,
-                        scoreValue: 0,
+                        scoreValue: scores[PlaySymbol.inNum(aiChose)]!,
                       ),
                       // PlayerCard(
                       //   imageUrl: imageUrl,
@@ -245,8 +252,8 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                                   board[index] == PlaySymbol.xInt
                                       ? PlaySymbol.x
                                       : board[index] == PlaySymbol.oInt
-                                          ? PlaySymbol.o
-                                          : "",
+                                      ? PlaySymbol.o
+                                      : "",
                                   style: GoogleFonts.hennyPenny(
                                     fontSize: 42 - 8,
                                     color: result.positions.contains(index)
@@ -264,7 +271,7 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                   const VerticalSpacer(4),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: themeProvider.secondaryColor,
                       borderRadius: BorderRadius.circular(12),
