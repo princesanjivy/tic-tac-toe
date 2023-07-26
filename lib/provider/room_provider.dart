@@ -24,8 +24,8 @@ class RoomProvider with ChangeNotifier {
   Future<int> createRoom(Player player, Widget widget) async {
     loading = true;
 
-    // int code = generateRandomRoomCode();
-    int code = 123465; // for testing;
+    int code = generateRandomRoomCode();
+    // int code = 123465; // for testing;
     List board = List.generate(generateRandomBoardSize(), (index) => 0);
     print("board: $board");
 

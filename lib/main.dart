@@ -61,6 +61,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Tic Tac Toe",
       theme: ThemeData(
         useMaterial3: false,
         textTheme: GoogleFonts.judsonTextTheme().copyWith(

@@ -49,3 +49,7 @@ app.*.map.json
 pubspec.lock
 
 /web/index.html
+
+# functions venv
+/functions/venv/
+/cloud-functions-js/
