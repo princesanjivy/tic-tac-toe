@@ -4,6 +4,7 @@ class RoomData {
   final int code;
   final String roomOwnerId;
   final String turn;
+  final DateTime createdAt;
   bool isStarted = false;
 
   final List<Player> players;
@@ -18,6 +19,7 @@ class RoomData {
     this.players,
     this.board,
     this.round,
+    this.createdAt,
   );
 
   factory RoomData.fromJson(json, int code) {
@@ -33,6 +35,9 @@ class RoomData {
       players,
       json!["board"],
       json!["round"],
+      DateTime.parse(
+        json!["createdAt"],
+      ),
     );
     roomData.isStarted = json!["isStarted"];
 
@@ -55,5 +60,6 @@ class RoomData {
         "players": playersToJson(players),
         "board": board,
         "round": round,
+        "createdAt": createdAt.toString(),
       };
 }
