@@ -1,10 +1,6 @@
-# Welcome to Cloud Functions for Firebase for Python!
-# To get started, simply uncomment the below code or create your own.
-# Deploy with `firebase deploy`
-
 from firebase_functions import https_fn, scheduler_fn
 from firebase_admin import initialize_app, db
-import time
+from datetime import datetime
 
 initialize_app()
 
@@ -16,11 +12,25 @@ def on_request_example(req: https_fn.Request) -> https_fn.Response:
 
 @scheduler_fn.on_schedule(schedule="0 * * * *")
 def on_every_hour(event: scheduler_fn.ScheduledEvent) -> None:
-    print(db)
+    date_format = "%Y-%m-%d %H:%M:%S.%f" # eg: 2023-07-26 21:43:50.019983
     path = db.reference("roomV1/")
     data = path.get()
-    print(len(data))
-    for room in data:
-        print("room_code:", room)
-        if int(room) % 2 == 0:
-            path.child(room).delete()
+
+    print(data)
+
+    if data:
+        for room in data:
+            created_at_str = data[room]["createdAt"]
+            created_at = datetime.strptime(created_at_str, date_format)
+            current_time = datetime.now()
+
+            # print(created_at)
+            # print(current_time)
+
+            time_diff = current_time - created_at
+
+            if time_diff.total_seconds() > 3600:
+                print("Time difference is greater than 1 hour")
+                print(f"Deleting... room => {room}")
+
+                path.child(room).delete()
