@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    double width = kIsWeb ? 400 : MediaQuery.of(context).size.width;
 
     return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
       return Scaffold(
@@ -112,39 +113,47 @@ class _RoomScreenState extends State<RoomScreen> {
                       return MyButton(
                         onPressed: () async {
                           FocusManager.instance.primaryFocus?.unfocus();
-                          int roomCodeInput =
-                              int.parse(roomCodeController.text);
-                          bool isRoomExist =
-                              await roomProvider.isRoomExist(roomCodeInput);
-                          if (!isRoomExist) {
+                          if (roomCodeController.text.isNotEmpty) {
+                            int roomCodeInput =
+                                int.parse(roomCodeController.text);
+                            bool isRoomExist =
+                                await roomProvider.isRoomExist(roomCodeInput);
+                            if (!isRoomExist) {
+                              Fluttertoast.showToast(
+                                msg: "Room doesn't exist",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
+                              );
+                            } else {
+                              await roomProvider.joinRoom(
+                                loginProvider.getUserData,
+                                roomCodeInput,
+                                widget,
+                              );
+
+                              bool isRoomOwner = false;
+                              navigation
+                                  .changeScreenReplacement(
+                                GameScreenController(
+                                  roomCode: roomCodeInput,
+                                  isRoomOwner: isRoomOwner,
+                                ),
+                                widget,
+                              )
+                                  .then((value) async {
+                                /// delete the room;
+                                await Future.delayed(
+                                    const Duration(milliseconds: 800));
+                                roomProvider.leaveRoom(
+                                    roomCodeInput, isRoomOwner);
+                              });
+                            }
+                          } else {
                             Fluttertoast.showToast(
-                              msg: "Room doesn't exist",
+                              msg: "Please enter a room code",
                               toastLength: Toast.LENGTH_LONG,
                               gravity: ToastGravity.CENTER,
                             );
-                          } else {
-                            await roomProvider.joinRoom(
-                              loginProvider.getUserData,
-                              roomCodeInput,
-                              widget,
-                            );
-
-                            bool isRoomOwner = false;
-                            navigation
-                                .changeScreenReplacement(
-                              GameScreenController(
-                                roomCode: roomCodeInput,
-                                isRoomOwner: isRoomOwner,
-                              ),
-                              widget,
-                            )
-                                .then((value) async {
-                              /// delete the room;
-                              await Future.delayed(
-                                  const Duration(milliseconds: 800));
-                              roomProvider.leaveRoom(
-                                  roomCodeInput, isRoomOwner);
-                            });
                           }
                         },
                         text: "Join",
@@ -190,7 +199,7 @@ class _RoomScreenState extends State<RoomScreen> {
                             widget,
                           )
                               .then((value) async {
-                            /// delete the room;
+                            print("delete the room");
                             await Future.delayed(
                                 const Duration(milliseconds: 800));
                             roomProvider.leaveRoom(roomCode, isRoomOwner);

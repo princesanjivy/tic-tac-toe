@@ -12,15 +12,17 @@ class MyButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.showLoading = false,
+    this.invertColor = false,
   });
 
   final String text;
   final Function onPressed;
   final bool showLoading;
+  final bool invertColor;
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    double width = kIsWeb ? 400 : MediaQuery.of(context).size.width;
 
     return ElevatedButton(
       onPressed: showLoading
@@ -42,8 +44,9 @@ class MyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        backgroundColor: MaterialStateProperty.all<Color>(
-            Provider.of<ThemeProvider>(context, listen: true).primaryColor),
+        backgroundColor: MaterialStateProperty.all<Color>(!invertColor
+            ? Provider.of<ThemeProvider>(context, listen: true).primaryColor
+            : Provider.of<ThemeProvider>(context, listen: true).bgColor),
       ),
       child: showLoading
           ? CircularProgressIndicator(
@@ -54,8 +57,10 @@ class MyButton extends StatelessWidget {
               text,
               style: TextStyle(
                 fontSize: defaultTextSize,
-                color:
-                    Provider.of<ThemeProvider>(context, listen: true).bgColor,
+                color: !invertColor
+                    ? Provider.of<ThemeProvider>(context, listen: true).bgColor
+                    : Provider.of<ThemeProvider>(context, listen: true)
+                        .primaryColor,
                 letterSpacing: 1,
               ),
             ),

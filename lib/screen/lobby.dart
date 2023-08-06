@@ -1,3 +1,5 @@
+import 'package:clipboard/clipboard.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
+import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
@@ -45,6 +48,8 @@ class _LobbyScreenState extends State<LobbyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = kIsWeb ? 600 : MediaQuery.of(context).size.width;
+
     return Consumer2<LoginProvider, ThemeProvider>(
       builder: (context, loginProvider, themeProvider, _) {
         return Scaffold(
@@ -59,7 +64,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                     Padding(
                       padding: const EdgeInsets.all(32),
                       child: Container(
-                        width: MediaQuery.of(context).size.width,
+                        width: width,
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(borderRadius),
@@ -93,15 +98,21 @@ class _LobbyScreenState extends State<LobbyScreen> {
                               ],
                             ),
 
-                            /// share button
+                            /// share button, show copy button in web
                             Positioned(
                               top: 20,
                               right: 10,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Share.share(
-                                    "Tic Tac Toe Online room code is : ${widget.roomData.code}",
-                                  );
+                                  if (kIsWeb) {
+                                    FlutterClipboard.copy(
+                                      "Tic Tac Toe Online room code is : ${widget.roomData.code}",
+                                    );
+                                  } else {
+                                    Share.share(
+                                      "Tic Tac Toe Online room code is : ${widget.roomData.code}",
+                                    );
+                                  }
                                 },
                                 style: ButtonStyle(
                                   minimumSize: MaterialStateProperty.all<Size>(
@@ -123,7 +134,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                           themeProvider.primaryColor),
                                 ),
                                 child: Icon(
-                                  Icons.share_rounded,
+                                  kIsWeb ? Icons.copy : Icons.share_rounded,
                                   color: themeProvider.bgColor,
                                 ),
                                 // child: Text(
@@ -269,49 +280,33 @@ class _LobbyScreenState extends State<LobbyScreen> {
                       Vibration.vibrate(duration: 80, amplitude: 120);
                       AudioController.buttonClick("audio/click2.ogg");
 
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            RoomProvider roomProvider =
-                                Provider.of<RoomProvider>(context,
-                                    listen: false);
+                      RoomProvider roomProvider =
+                          Provider.of<RoomProvider>(context, listen: false);
 
-                            return AlertDialog(
-                              backgroundColor: themeProvider.bgColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              title: const Text("Are you sure want to leave?"),
-                              content: SizedBox(
-                                height: 200,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Leave room!"),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                MyButton(
-                                  text: "Yes",
-                                  onPressed: () async {
-                                    Navigation.goBack(context);
-                                    await navigation.changeScreenReplacement(
-                                      const RoomScreen(),
-                                      widget,
-                                    );
+                      PopUp.show(
+                        context,
+                        title: "Info",
+                        description: "Are you sure want to leave?",
+                        button1Text: "Yes",
+                        button2Text: "No",
+                        barrierDismissible: false,
+                        button1OnPressed: () async {
+                          // await roomProvider.leaveRoom(
+                          //   widget.roomData.code,
+                          //   widget.isRoomOwner,
+                          //   // navigation,
+                          //   // widget,
+                          // );
 
-                                    // await roomProvider.leaveRoom(
-                                    //   widget.roomData,
-                                    //   widget.isRoomOwner,
-                                    //   navigation,
-                                    //   widget,
-                                    // );
-                                  },
-                                ),
-                              ],
-                            );
-                          });
+                          await navigation.changeScreenReplacement(
+                            const RoomScreen(),
+                            widget,
+                          );
+                        },
+                        button2OnPressed: () {
+                          Navigator.pop(context);
+                        },
+                      );
                     },
                     style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all<Size>(

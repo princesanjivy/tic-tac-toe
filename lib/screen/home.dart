@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
+import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
@@ -179,62 +180,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     Vibration.vibrate(duration: 80, amplitude: 120);
                     AudioController.buttonClick("audio/click2.ogg");
 
-                    print("show menu card");
+                    PopUp.show(
+                      context,
+                      title: "Info",
+                      description: "App settings will appear here!",
+                      button1Text: "Change theme",
+                      button2Text: "Logout",
+                      barrierDismissible: true,
+                      button1OnPressed: () {
+                        Provider.of<ThemeProvider>(
+                          context,
+                          listen: false,
+                        ).changeTheme();
+                        Navigator.pop(context);
+                        navigation.changeScreenReplacement(
+                            const ScreenController(), widget);
+                      },
+                      button2OnPressed: () {
+                        LoginProvider loginProvider =
+                            Provider.of<LoginProvider>(context, listen: false);
 
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          LoginProvider loginProvider =
-                              Provider.of<LoginProvider>(context,
-                                  listen: false);
-                          return AlertDialog(
-                            backgroundColor: themeProvider.bgColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            title: Text(
-                              "Info",
-                              style: TextStyle(
-                                fontSize: defaultTextSize + 6,
-                                color: themeProvider.primaryColor,
-                              ),
-                            ),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // TODO: UI needs to be changed!
-                                Text(
-                                  "App settings will appear here",
-                                  style: TextStyle(
-                                    fontSize: defaultTextSize,
-                                    color: themeProvider.secondaryColor,
-                                  ),
-                                ),
-                                const VerticalSpacer(8),
-                                MyButton(
-                                  text: "Change theme",
-                                  onPressed: () {
-                                    Provider.of<ThemeProvider>(
-                                      context,
-                                      listen: false,
-                                    ).changeTheme();
-                                    Navigator.pop(context);
-                                    navigation.changeScreenReplacement(
-                                        const ScreenController(), widget);
-                                  },
-                                ),
-                                const VerticalSpacer(8),
-                                MyButton(
-                                  text: "Logout",
-                                  onPressed: () {
-                                    loginProvider.logout();
-                                  },
-                                  showLoading: loginProvider.loading,
-                                ),
-                              ],
-                            ),
-                          );
-                        });
+                        loginProvider.logout();
+                      },
+                    );
                   },
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all<Size>(
