@@ -5,11 +5,6 @@ from datetime import datetime
 initialize_app()
 
 
-@https_fn.on_request()
-def on_request_example(req: https_fn.Request) -> https_fn.Response:
-    return https_fn.Response("<h1>Hello, princesanjivy from locals!</h1>")
-
-
 @scheduler_fn.on_schedule(schedule="0 * * * *")
 def on_every_hour(event: scheduler_fn.ScheduledEvent) -> None:
     date_format = "%Y-%m-%d %H:%M:%S.%f" # eg: 2023-07-26 21:43:50.019983
