@@ -1,4 +1,4 @@
-from firebase_functions import https_fn, scheduler_fn
+from firebase_functions import scheduler_fn
 from firebase_admin import initialize_app, db
 from datetime import datetime
 
