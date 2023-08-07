@@ -115,8 +115,7 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) =>
-      const SimpleDialog(
+      builder: (context) => const SimpleDialog(
         children: [
           Padding(
             padding: EdgeInsets.all(8.0),
@@ -159,27 +158,45 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      PlayerCard(
-                        imageUrl: "assets/images/user.png",
-                        name: "You ($playerChose)",
-                        isAsset: true,
-                        showScore: true,
-                        scoreValue: scores[PlaySymbol.inNum(playerChose)]!,
-                      ),
-                      Text(
-                        "Round\n$round",
-                        style: GoogleFonts.hennyPenny(
-                          fontSize: defaultTextSize - 2,
-                          color: themeProvider.primaryColor,
+                      WidgetAnimator(
+                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                          delay: const Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
                         ),
-                        textAlign: TextAlign.center,
+                        child: PlayerCard(
+                          imageUrl: "assets/images/user.png",
+                          name: "You ($playerChose)",
+                          isAsset: true,
+                          showScore: true,
+                          scoreValue: scores[PlaySymbol.inNum(playerChose)]!,
+                        ),
                       ),
-                      PlayerCard(
-                        imageUrl: "assets/images/ai.png",
-                        name: "AI ($aiChose)",
-                        isAsset: true,
-                        showScore: true,
-                        scoreValue: scores[PlaySymbol.inNum(aiChose)]!,
+                      WidgetAnimator(
+                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                          delay: const Duration(milliseconds: 1200),
+                          curve: Curves.easeInOut,
+                        ),
+                        child: Text(
+                          "Round\n$round",
+                          style: GoogleFonts.hennyPenny(
+                            fontSize: defaultTextSize - 2,
+                            color: themeProvider.primaryColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      WidgetAnimator(
+                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                          delay: const Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
+                        ),
+                        child: PlayerCard(
+                          imageUrl: "assets/images/ai.png",
+                          name: "AI ($aiChose)",
+                          isAsset: true,
+                          showScore: true,
+                          scoreValue: scores[PlaySymbol.inNum(aiChose)]!,
+                        ),
                       ),
                       // PlayerCard(
                       //   imageUrl: imageUrl,
@@ -190,97 +207,111 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                     ],
                   ),
                   const VerticalSpacer(16),
-                  Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Container(
-                      width: kIsWeb ? 500 : null,
-                      height: kIsWeb ? 500 : null,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: themeProvider.primaryColor,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: GridView.builder(
-                        padding: const EdgeInsets.all(0),
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: getBoardSize(board),
-                          mainAxisSpacing: 1,
-                          crossAxisSpacing: 1,
-                          // childAspectRatio: 1,
+                  WidgetAnimator(
+                    incomingEffect: WidgetTransitionEffects.incomingScaleDown(
+                      delay: const Duration(milliseconds: 800),
+                      curve: Curves.fastOutSlowIn,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Container(
+                        width: kIsWeb ? 500 : null,
+                        height: kIsWeb ? 500 : null,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: themeProvider.primaryColor,
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        itemCount: board.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              // print(widget.roomData.board);
-                              // result = checkWin(
-                              //   widget.roomData.board,
-                              //   PlaySymbol.inNum(widget.roomData.turn),
-                              // );
-                              print(board);
-                              print(turn);
-                              print(playerChose);
-                              if (board[index] == 0 && turn == playerChose) {
-                                board[index] = PlaySymbol.inNum(turn);
-                                turn = (turn == PlaySymbol.x
-                                    ? PlaySymbol.o
-                                    : PlaySymbol.x);
-
-                                setState(() {});
-
-                                playAi(turn);
-                              }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: result.positions.contains(index)
-                                    ? Colors.deepOrange.withOpacity(0.8)
-                                    : themeProvider.bgColor,
-                                border: Border.all(
-                                  color: themeProvider.primaryColor,
-                                  // width: 2,
-                                ),
-                                borderRadius: corners.contains(index)
-                                    ? borders[index]
-                                    : null,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  board[index] == PlaySymbol.xInt
-                                      ? PlaySymbol.x
-                                      : board[index] == PlaySymbol.oInt
+                        child: GridView.builder(
+                          padding: const EdgeInsets.all(0),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: getBoardSize(board),
+                            mainAxisSpacing: 1,
+                            crossAxisSpacing: 1,
+                            // childAspectRatio: 1,
+                          ),
+                          itemCount: board.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                // print(widget.roomData.board);
+                                // result = checkWin(
+                                //   widget.roomData.board,
+                                //   PlaySymbol.inNum(widget.roomData.turn),
+                                // );
+                                print(board);
+                                print(turn);
+                                print(playerChose);
+                                if (board[index] == 0 && turn == playerChose) {
+                                  board[index] = PlaySymbol.inNum(turn);
+                                  turn = (turn == PlaySymbol.x
                                       ? PlaySymbol.o
-                                      : "",
-                                  style: GoogleFonts.hennyPenny(
-                                    fontSize: 42 - 8,
-                                    color: result.positions.contains(index)
-                                        ? themeProvider.bgColor
-                                        : themeProvider.primaryColor,
+                                      : PlaySymbol.x);
+
+                                  setState(() {});
+
+                                  playAi(turn);
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: result.positions.contains(index)
+                                      ? Colors.deepOrange.withOpacity(0.8)
+                                      : themeProvider.bgColor,
+                                  border: Border.all(
+                                    color: themeProvider.primaryColor,
+                                    // width: 2,
+                                  ),
+                                  borderRadius: corners.contains(index)
+                                      ? borders[index]
+                                      : null,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    board[index] == PlaySymbol.xInt
+                                        ? PlaySymbol.x
+                                        : board[index] == PlaySymbol.oInt
+                                            ? PlaySymbol.o
+                                            : "",
+                                    style: GoogleFonts.hennyPenny(
+                                      fontSize: 42 - 8,
+                                      color: result.positions.contains(index)
+                                          ? themeProvider.bgColor
+                                          : themeProvider.primaryColor,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
                   const VerticalSpacer(4),
-                  Container(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: themeProvider.secondaryColor,
-                      borderRadius: BorderRadius.circular(12),
+                  WidgetAnimator(
+                    incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                      delay: const Duration(milliseconds: 1200),
+                      curve: Curves.easeInOut,
                     ),
-                    child: Text(
-                      (turn == playerChose) ? "Your turn" : "AI turn",
-                      style: TextStyle(
-                        fontSize: defaultTextSize,
-                        color: themeProvider.bgColor,
+                    atRestEffect: WidgetRestingEffects.wave(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: themeProvider.secondaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        (turn == playerChose) ? "Your turn" : "AI turn",
+                        style: TextStyle(
+                          fontSize: defaultTextSize,
+                          color: themeProvider.bgColor,
+                        ),
                       ),
                     ),
                   ),

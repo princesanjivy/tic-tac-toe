@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/model/player.dart';
 
 class LoginProvider with ChangeNotifier {
@@ -48,12 +49,21 @@ class LoginProvider with ChangeNotifier {
   }
 
   Player get getUserData {
+    Player player;
     final user = FirebaseAuth.instance.currentUser;
-    Player player = Player(
-      user!.displayName!,
-      user.uid,
-      user.photoURL!,
-    );
+    if (user != null) {
+      player = Player(
+        user.displayName!,
+        user.uid,
+        user.photoURL!,
+      );
+    } else {
+      player = Player(
+        "John Doe",
+        "123456789",
+        imageUrl,
+      );
+    }
 
     return player;
   }

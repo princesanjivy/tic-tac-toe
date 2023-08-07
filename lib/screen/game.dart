@@ -5,15 +5,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
+import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
+import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
+import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
+import 'package:tic_tac_toe/screen/home.dart';
+import 'package:vibration/vibration.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -47,6 +54,8 @@ class GameScreen extends StatefulWidget {
 // 20 21 22 23 24
 
 class _GameScreenState extends State<GameScreen> {
+  late Navigation navigation;
+
   // List<int> corners = [0, 4, 20, 24];
   // Map<int, BorderRadiusGeometry> borders = {
   //   0: const BorderRadius.only(
@@ -77,6 +86,8 @@ class _GameScreenState extends State<GameScreen> {
     // nameless(){
     GameProvider gameProvider = Provider.of<GameProvider>(context);
     gameProvider.designBoard(widget.roomData.board);
+
+    navigation = Navigation(Navigator.of(context));
     // }
   }
 
@@ -97,175 +108,256 @@ class _GameScreenState extends State<GameScreen> {
         // }
         return Scaffold(
           backgroundColor: themeProvider.bgColor,
-          body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
+          body: Stack(
+            children: [
+              Center(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    PlayerCard(
-                      imageUrl: loginProvider.getUserData.displayPicture,
-                      name:
-                          "You (${widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose})",
-                      showScore: true,
-                      scoreValue: widget.roomData
-                          .players[!widget.isRoomOwner ? 1 : 0].winCount,
-                    ),
-                    Text(
-                      "Round\n${widget.roomData.round}",
-                      style: GoogleFonts.hennyPenny(
-                        fontSize: defaultTextSize - 2,
-                        color: themeProvider.primaryColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    FutureBuilder<Player>(
-                      future: loginProvider.getUserById(widget.roomData
-                          .players[widget.isRoomOwner ? 1 : 0].playerId),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return CircularProgressIndicator(
-                              color: themeProvider.bgColor);
-                        }
-                        return PlayerCard(
-                          imageUrl: snapshot.data!.displayPicture,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        PlayerCard(
+                          imageUrl: loginProvider.getUserData.displayPicture,
                           name:
-                              "${snapshot.data!.name.split(" ")[0]} (${widget.roomData.players[widget.isRoomOwner ? 1 : 0].chose})",
+                          "You (${widget.roomData.players[!widget.isRoomOwner
+                              ? 1
+                              : 0].chose})",
                           showScore: true,
                           scoreValue: widget.roomData
-                              .players[widget.isRoomOwner ? 1 : 0].winCount,
-                        );
-                      },
+                              .players[!widget.isRoomOwner ? 1 : 0].winCount,
+                        ),
+                        Text(
+                          "Round\n${widget.roomData.round}",
+                          style: GoogleFonts.hennyPenny(
+                            fontSize: defaultTextSize - 2,
+                            color: themeProvider.primaryColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        FutureBuilder<Player>(
+                          future: loginProvider.getUserById(widget.roomData
+                              .players[widget.isRoomOwner ? 1 : 0].playerId),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return CircularProgressIndicator(
+                                  color: themeProvider.bgColor);
+                            }
+                            return PlayerCard(
+                              imageUrl: snapshot.data!.displayPicture,
+                              name:
+                              "${snapshot.data!.name.split(" ")[0]} (${widget
+                                  .roomData.players[widget.isRoomOwner ? 1 : 0]
+                                  .chose})",
+                              showScore: true,
+                              scoreValue: widget.roomData
+                                  .players[widget.isRoomOwner ? 1 : 0].winCount,
+                            );
+                          },
+                        ),
+                        // PlayerCard(
+                        //   imageUrl: imageUrl,
+                        //   name: "Opponent",
+                        //   showScore: true,
+                        //   scoreValue: 0,
+                        // ),
+                      ],
                     ),
-                    // PlayerCard(
-                    //   imageUrl: imageUrl,
-                    //   name: "Opponent",
-                    //   showScore: true,
-                    //   scoreValue: 0,
-                    // ),
-                  ],
-                ),
-                const VerticalSpacer(16),
-                Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Container(
-                    width: kIsWeb ? 500 : null,
-                    height: kIsWeb ? 500 : null,
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: themeProvider.primaryColor,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: GridView.builder(
-                      padding: const EdgeInsets.all(0),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: getBoardSize(widget.roomData.board),
-                        mainAxisSpacing: 1,
-                        crossAxisSpacing: 1,
-                        // childAspectRatio: 1,
-                      ),
-                      itemCount: widget.roomData.board.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            // print(widget.roomData.board);
-                            // result = checkWin(
-                            //   widget.roomData.board,
-                            //   PlaySymbol.inNum(widget.roomData.turn),
-                            // );
-                            if (widget.roomData.board[index] == 0 &&
-                                widget.roomData.turn ==
-                                    widget
-                                        .roomData
-                                        .players[!widget.isRoomOwner ? 1 : 0]
-                                        .chose) {
-                              FirebaseDatabase.instance
-                                  .ref(
-                                    "$roomPath${widget.roomData.code}/board/$index",
+                    const VerticalSpacer(16),
+                    Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Container(
+                        width: kIsWeb ? 500 : null,
+                        height: kIsWeb ? 500 : null,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: themeProvider.primaryColor,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: GridView.builder(
+                          padding: const EdgeInsets.all(0),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: getBoardSize(widget.roomData.board),
+                            mainAxisSpacing: 1,
+                            crossAxisSpacing: 1,
+                            // childAspectRatio: 1,
+                          ),
+                          itemCount: widget.roomData.board.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                // print(widget.roomData.board);
+                                // result = checkWin(
+                                //   widget.roomData.board,
+                                //   PlaySymbol.inNum(widget.roomData.turn),
+                                // );
+                                if (widget.roomData.board[index] == 0 &&
+                                    widget.roomData.turn ==
+                                        widget
+                                            .roomData
+                                            .players[
+                                        !widget.isRoomOwner ? 1 : 0]
+                                            .chose) {
+                                  FirebaseDatabase.instance
+                                      .ref(
+                                    "$roomPath${widget.roomData
+                                        .code}/board/$index",
                                   )
-                                  .set(PlaySymbol.inNum(widget.roomData.turn));
-                              FirebaseDatabase.instance
-                                  .ref(
+                                      .set(PlaySymbol.inNum(
+                                      widget.roomData.turn));
+                                  FirebaseDatabase.instance
+                                      .ref(
                                     "$roomPath${widget.roomData.code}/turn",
                                   )
-                                  .set(
+                                      .set(
                                     widget.roomData.turn == PlaySymbol.x
                                         ? PlaySymbol.o
                                         : PlaySymbol.x,
                                   );
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: widget.result.positions.contains(index)
-                                  ? Colors.deepOrange.withOpacity(0.8)
-                                  : themeProvider.bgColor,
-                              border: Border.all(
-                                color: themeProvider.primaryColor,
-                                // width: 2,
-                              ),
-                              borderRadius: gameProvider.corners.contains(index)
-                                  ? gameProvider.borders[index]
-                                  : null,
-                            ),
-                            child: Center(
-                              child: Text(
-                                widget.roomData.board[index] == PlaySymbol.xInt
-                                    ? PlaySymbol.x
-                                    : widget.roomData.board[index] ==
-                                            PlaySymbol.oInt
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: widget.result.positions.contains(index)
+                                      ? Colors.deepOrange.withOpacity(0.8)
+                                      : themeProvider.bgColor,
+                                  border: Border.all(
+                                    color: themeProvider.primaryColor,
+                                    // width: 2,
+                                  ),
+                                  borderRadius:
+                                  gameProvider.corners.contains(index)
+                                      ? gameProvider.borders[index]
+                                      : null,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    widget.roomData.board[index] ==
+                                        PlaySymbol.xInt
+                                        ? PlaySymbol.x
+                                        : widget.roomData.board[index] ==
+                                        PlaySymbol.oInt
                                         ? PlaySymbol.o
                                         : "",
-                                style: GoogleFonts.hennyPenny(
-                                  fontSize: 42 - 8,
-                                  color: widget.result.positions.contains(index)
-                                      ? themeProvider.bgColor
-                                      : themeProvider.primaryColor,
+                                    style: GoogleFonts.hennyPenny(
+                                      fontSize: 42 - 8,
+                                      color: widget.result.positions
+                                          .contains(index)
+                                          ? themeProvider.bgColor
+                                          : themeProvider.primaryColor,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
+                    const VerticalSpacer(4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: themeProvider.secondaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        (widget.roomData.turn ==
+                            widget.roomData
+                                .players[!widget.isRoomOwner ? 1 : 0].chose)
+                            ? "Your turn"
+                            : "Opponent turn",
+                        style: TextStyle(
+                          fontSize: defaultTextSize,
+                          color: themeProvider.bgColor,
+                        ),
+                      ),
+                    ),
+                    // const VerticalSpacer(8),
+                    // Text(
+                    //   widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose,
+                    //   style: GoogleFonts.hennyPenny(
+                    //     fontSize: 32,
+                    //     color: primaryColor,
+                    //   ),
+                    // ),
+                  ],
                 ),
-                const VerticalSpacer(4),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: themeProvider.secondaryColor,
-                    borderRadius: BorderRadius.circular(12),
+              ),
+              Positioned(
+                top: 32,
+                right: 32,
+                child: WidgetAnimator(
+                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(
+                    delay: const Duration(milliseconds: 1200),
+                    curve: Curves.easeInOut,
                   ),
-                  child: Text(
-                    (widget.roomData.turn ==
-                            widget.roomData.players[!widget.isRoomOwner ? 1 : 0]
-                                .chose)
-                        ? "Your turn"
-                        : "Opponent turn",
-                    style: TextStyle(
-                      fontSize: defaultTextSize,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Vibration.vibrate(duration: 80, amplitude: 120);
+                      AudioController.buttonClick("audio/click2.ogg");
+
+                      RoomProvider roomProvider =
+                      Provider.of<RoomProvider>(context, listen: false);
+
+                      PopUp.show(
+                        context,
+                        title: "Info",
+                        description: "Are you sure want to leave the game?",
+                        button1Text: "Yes",
+                        button2Text: "No",
+                        barrierDismissible: false,
+                        button1OnPressed: () async {
+                          // TODO: close room and show info to other player as well
+
+                          await navigation.changeScreenReplacement(
+                            const HomeScreen(),
+                            widget,
+                          );
+                        },
+                        button2OnPressed: () {
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all<Size>(
+                        const Size(48, 48),
+                      ),
+                      elevation: MaterialStateProperty.all<double>(4),
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                          const EdgeInsets.all(0)),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          themeProvider.primaryColor),
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded, // TODO: temp icon
                       color: themeProvider.bgColor,
                     ),
+                    // child: Text(
+                    //   "i",
+                    //   style: TextStyle(
+                    //     fontSize: defaultTextSize,
+                    //     color: bgColor,
+                    //     letterSpacing: 1,
+                    //   ),
+                    // ),
                   ),
                 ),
-                // const VerticalSpacer(8),
-                // Text(
-                //   widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose,
-                //   style: GoogleFonts.hennyPenny(
-                //     fontSize: 32,
-                //     color: primaryColor,
-                //   ),
-                // ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
