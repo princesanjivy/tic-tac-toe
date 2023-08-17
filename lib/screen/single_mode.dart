@@ -6,10 +6,10 @@ import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
-import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
+import 'package:tic_tac_toe/provider/single_mode_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:vibration/vibration.dart';
@@ -19,16 +19,11 @@ class SingleModeScreen extends StatefulWidget {
   const SingleModeScreen({super.key});
 
   @override
-  State<SingleModeScreen> createState() => _SingleModeScreenState();
+  State<SingleModeScreen> createState() => SingleModeScreenState();
 }
 
-class _SingleModeScreenState extends State<SingleModeScreen> {
+class SingleModeScreenState extends State<SingleModeScreen> {
   List<int> corners = [0, 3, 12, 15];
-
-  // List board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  List board = List.generate(16, (index) => 0);
-  Map<int, int> scores = {1: 0, 2: 0};
-  int round = 1;
 
   Map<int, BorderRadiusGeometry> borders = {
     0: const BorderRadius.only(
@@ -46,93 +41,16 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
   };
 
   late Navigation navigation;
-  late String playerChose;
-  late String aiChose;
-  Result result = Result(false, []);
-
-  String turn = PlaySymbol.x;
-
-  /// player with `x` gets first chance.
 
   @override
   void initState() {
     super.initState();
 
-    // playerChose = generateRandomPlaySymbol();
-    playerChose = PlaySymbol.x;
-    if (playerChose == PlaySymbol.x) {
-      aiChose = PlaySymbol.o;
-    } else {
-      aiChose = PlaySymbol.x;
-      playAi(aiChose);
-    }
+    initProvider();
   }
 
-  playAi(String t) async {
-    await Future.delayed(const Duration(milliseconds: 600), () {
-      int index = findBestMove(board, PlaySymbol.inNum(t), getBoardSize(board));
-      bool skipCheck = false;
-      {
-        if (index == -1) {
-          printOverMsg(t);
-          skipCheck = true;
-        } else {
-          board[index] = PlaySymbol.inNum(t);
-          turn = (t == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x);
-
-          setState(() {});
-        }
-      }
-
-      {
-        if (!skipCheck && isGameOver(board)) {
-          printOverMsg(t);
-        }
-      }
-    });
-  }
-
-  printOverMsg(t) async {
-    Result resultX = checkWin(board, PlaySymbol.xInt, getBoardSize(board));
-    Result resultO = checkWin(board, PlaySymbol.oInt, getBoardSize(board));
-
-    if (resultX.hasWon) {
-      print("Player 1 (X) wins!");
-      result = resultX;
-      scores[PlaySymbol.xInt] = scores[PlaySymbol.xInt]! + 1;
-    } else if (resultO.hasWon) {
-      print("Player 2 (O) wins!");
-      result = resultO;
-      scores[PlaySymbol.oInt] = scores[PlaySymbol.oInt]! + 1;
-    } else {
-      print("It's a draw!");
-    }
-
-    round += 1;
-
-    setState(() {});
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const SimpleDialog(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("Game over\n\nRestarting in 5 seconds..."),
-          ),
-        ],
-      ),
-    );
-    await Future.delayed(const Duration(seconds: 5), () {
-      // board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-      board = List.generate(16, (index) => 0);
-      result = Result(false, []);
-      turn = (t == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x);
-
-      Navigator.pop(context);
-      setState(() {});
-    });
+  void initProvider() {
+    Provider.of<SingleModeProvider>(context, listen: false).init(context);
   }
 
   @override
@@ -144,6 +62,9 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SingleModeProvider provider =
+        Provider.of<SingleModeProvider>(context, listen: true);
+
     return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
       return Scaffold(
         backgroundColor: themeProvider.bgColor,
@@ -158,26 +79,21 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                          delay: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOut,
-                        ),
+                      PlayAnimationOnWidget(
+                        msDelay: 400,
                         child: PlayerCard(
                           imageUrl: "assets/images/user.png",
-                          name: "You ($playerChose)",
+                          name: "You (${provider.playerChose})",
                           isAsset: true,
                           showScore: true,
-                          scoreValue: scores[PlaySymbol.inNum(playerChose)]!,
+                          scoreValue: provider
+                              .scores[PlaySymbol.inNum(provider.playerChose)]!,
                         ),
                       ),
-                      WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                          delay: const Duration(milliseconds: 1200),
-                          curve: Curves.easeInOut,
-                        ),
+                      PlayAnimationOnWidget(
+                        msDelay: 1200,
                         child: Text(
-                          "Round\n$round",
+                          "Round\n${provider.round}",
                           style: GoogleFonts.hennyPenny(
                             fontSize: defaultTextSize - 2,
                             color: themeProvider.primaryColor,
@@ -185,29 +101,22 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                          delay: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOut,
-                        ),
+                      PlayAnimationOnWidget(
+                        msDelay: 400,
                         child: PlayerCard(
                           imageUrl: "assets/images/ai.png",
-                          name: "AI ($aiChose)",
+                          name: "AI (${provider.aiChose})",
                           isAsset: true,
                           showScore: true,
-                          scoreValue: scores[PlaySymbol.inNum(aiChose)]!,
+                          scoreValue: provider
+                              .scores[PlaySymbol.inNum(provider.aiChose)]!,
                         ),
                       ),
-                      // PlayerCard(
-                      //   imageUrl: imageUrl,
-                      //   name: "Opponent",
-                      //   showScore: true,
-                      //   scoreValue: 0,
-                      // ),
                     ],
                   ),
                   const VerticalSpacer(16),
-                  WidgetAnimator(
+                  PlayAnimationOnWidget(
+                    useIncomingEffect: true,
                     incomingEffect: WidgetTransitionEffects.incomingScaleDown(
                       delay: const Duration(milliseconds: 800),
                       curve: Curves.fastOutSlowIn,
@@ -229,39 +138,35 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                           shrinkWrap: true,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: getBoardSize(board),
+                            crossAxisCount: getBoardSize(provider.board),
                             mainAxisSpacing: 1,
                             crossAxisSpacing: 1,
                             // childAspectRatio: 1,
                           ),
-                          itemCount: board.length,
+                          itemCount: provider.board.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                // print(widget.roomData.board);
-                                // result = checkWin(
-                                //   widget.roomData.board,
-                                //   PlaySymbol.inNum(widget.roomData.turn),
-                                // );
-                                print(board);
-                                print(turn);
-                                print(playerChose);
-                                if (board[index] == 0 && turn == playerChose) {
-                                  board[index] = PlaySymbol.inNum(turn);
-                                  turn = (turn == PlaySymbol.x
+                                print(provider.board);
+                                print(provider.turn);
+                                print(provider.playerChose);
+                                if (provider.board[index] == 0 &&
+                                    provider.turn == provider.playerChose) {
+                                  provider.board[index] =
+                                      PlaySymbol.inNum(provider.turn);
+                                  provider.turn = (provider.turn == PlaySymbol.x
                                       ? PlaySymbol.o
                                       : PlaySymbol.x);
 
-                                  setState(() {});
-
-                                  playAi(turn);
+                                  provider.aiMove(provider.turn);
                                 }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: result.positions.contains(index)
-                                      ? Colors.deepOrange.withOpacity(0.8)
-                                      : themeProvider.bgColor,
+                                  color:
+                                      provider.result.positions.contains(index)
+                                          ? Colors.deepOrange.withOpacity(0.8)
+                                          : themeProvider.bgColor,
                                   border: Border.all(
                                     color: themeProvider.primaryColor,
                                     // width: 2,
@@ -272,14 +177,16 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    board[index] == PlaySymbol.xInt
+                                    provider.board[index] == PlaySymbol.xInt
                                         ? PlaySymbol.x
-                                        : board[index] == PlaySymbol.oInt
+                                        : provider.board[index] ==
+                                                PlaySymbol.oInt
                                             ? PlaySymbol.o
                                             : "",
                                     style: GoogleFonts.hennyPenny(
                                       fontSize: 42 - 8,
-                                      color: result.positions.contains(index)
+                                      color: provider.result.positions
+                                              .contains(index)
                                           ? themeProvider.bgColor
                                           : themeProvider.primaryColor,
                                     ),
@@ -293,12 +200,13 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                     ),
                   ),
                   const VerticalSpacer(4),
-                  WidgetAnimator(
+                  PlayAnimationOnWidget(
+                    msDelay: 1200,
+                    hasRestEffect: true,
                     incomingEffect: WidgetTransitionEffects.incomingScaleUp(
                       delay: const Duration(milliseconds: 1200),
                       curve: Curves.easeInOut,
                     ),
-                    atRestEffect: WidgetRestingEffects.wave(),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
@@ -307,7 +215,9 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        (turn == playerChose) ? "Your turn" : "AI turn",
+                        (provider.turn == provider.playerChose)
+                            ? "Your turn"
+                            : "AI turn",
                         style: TextStyle(
                           fontSize: defaultTextSize,
                           color: themeProvider.bgColor,
@@ -315,25 +225,14 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                       ),
                     ),
                   ),
-                  // const VerticalSpacer(8),
-                  // Text(
-                  //   widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose,
-                  //   style: GoogleFonts.hennyPenny(
-                  //     fontSize: 32,
-                  //     color: primaryColor,
-                  //   ),
-                  // ),
                 ],
               ),
             ),
             Positioned(
               top: 32,
               right: 32,
-              child: WidgetAnimator(
-                incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                  delay: const Duration(milliseconds: 1200),
-                  curve: Curves.easeInOut,
-                ),
+              child: PlayAnimationOnWidget(
+                msDelay: 1200,
                 child: ElevatedButton(
                   onPressed: () {
                     Vibration.vibrate(duration: 80, amplitude: 120);
@@ -364,19 +263,49 @@ class _SingleModeScreenState extends State<SingleModeScreen> {
                     Icons.arrow_back_ios_new_rounded, // TODO: temp icon
                     color: themeProvider.bgColor,
                   ),
-                  // child: Text(
-                  //   "i",
-                  //   style: TextStyle(
-                  //     fontSize: defaultTextSize,
-                  //     color: bgColor,
-                  //     letterSpacing: 1,
-                  //   ),
-                  // ),
                 ),
               ),
             ),
           ],
         ),
+      );
+    });
+  }
+}
+
+class PlayAnimationOnWidget extends StatefulWidget {
+  final Widget child;
+  final int? msDelay;
+  final bool useIncomingEffect, hasRestEffect;
+  final WidgetTransitionEffects? incomingEffect;
+
+  const PlayAnimationOnWidget({
+    super.key,
+    required this.child,
+    this.msDelay,
+    this.useIncomingEffect = false,
+    this.incomingEffect,
+    this.hasRestEffect = false,
+  });
+
+  @override
+  State<PlayAnimationOnWidget> createState() => _PlayAnimationOnWidgetState();
+}
+
+class _PlayAnimationOnWidgetState extends State<PlayAnimationOnWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<SingleModeProvider>(builder: (context, provider, _) {
+      return WidgetAnimator(
+        incomingEffect: widget.useIncomingEffect
+            ? widget.incomingEffect
+            : WidgetTransitionEffects.incomingScaleUp(
+                delay: Duration(milliseconds: widget.msDelay!),
+                curve: Curves.easeInOut,
+              ),
+        atRestEffect: widget.hasRestEffect ? WidgetRestingEffects.wave() : null,
+        doStateChange: provider.doStateChange,
+        child: widget.child,
       );
     });
   }
