@@ -77,9 +77,9 @@ class RoomProvider with ChangeNotifier {
   }
 
   Future<void> leaveRoom(int roomCode, bool isRoomOwner) async {
-    String path = "$roomPath${roomCode}/players/";
+    String path = "$roomPath$roomCode/players/";
     if (isRoomOwner) {
-      await FirebaseDatabase.instance.ref("$roomPath${roomCode}").remove();
+      await FirebaseDatabase.instance.ref("$roomPath$roomCode").remove();
     } else {
       path += "1";
       await FirebaseDatabase.instance.ref(path).remove();
@@ -99,7 +99,4 @@ class RoomProvider with ChangeNotifier {
 
     return databaseEvent.snapshot.value != null;
   }
-// updateRoomStatus() {
-//
-// }
 }

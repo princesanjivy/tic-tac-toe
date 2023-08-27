@@ -6,21 +6,6 @@ class Navigation {
 
   Navigation(this._navigatorState);
 
-  /// remove this method if not used
-  static Future changeScreen(
-      BuildContext context, Widget screen, Widget currentScreen) {
-    return Navigator.push(
-      context,
-      PageTransition(
-        child: screen,
-        type: PageTransitionType.rightToLeftWithFade,
-        childCurrent: currentScreen,
-        duration: const Duration(milliseconds: 400),
-        reverseDuration: const Duration(milliseconds: 400),
-      ),
-    );
-  }
-
   Future changeScreenReplacement(Widget screen, Widget currentScreen) {
     return _navigatorState.pushReplacement(
       PageTransition(
@@ -33,7 +18,7 @@ class Navigation {
     );
   }
 
-  static goBack(BuildContext context) {
+  void goBack(BuildContext context) {
     return Navigator.pop(context);
   }
 }

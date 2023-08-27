@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/check_win.dart' as helper;
 import 'package:tic_tac_toe/helper/game.dart';
@@ -42,6 +43,13 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    print("Room Dispose");
+  }
+
+  @override
   Widget build(BuildContext context) {
     double width = kIsWeb ? 400 : MediaQuery.of(context).size.width;
 
@@ -55,172 +63,170 @@ class _RoomScreenState extends State<RoomScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Enter room code and join with your friend",
-                    style: TextStyle(
-                      fontSize: defaultTextSize,
-                      color: themeProvider.secondaryColor,
+                  AnimationOnWidget(
+                    useIncomingEffect: true,
+                    incomingEffect:
+                        WidgetTransitionEffects.incomingSlideInFromTop(
+                      delay: const Duration(milliseconds: 400),
+                      curve: Curves.fastOutSlowIn,
+                    ),
+                    child: Text(
+                      "Enter room code and join with your friend",
+                      style: TextStyle(
+                        fontSize: defaultTextSize,
+                        color: themeProvider.secondaryColor,
+                      ),
                     ),
                   ),
                   const VerticalSpacer(32),
-                  Material(
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        color: themeProvider.primaryColor,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      ),
-                    ),
-                    child: SizedBox(
-                      height: 48,
-                      width: width / 1.6,
-                      child: TextField(
-                        controller: roomCodeController,
-                        style: TextStyle(
+                  AnimationOnWidget(
+                    msDelay: 800,
+                    child: Material(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(
                           color: themeProvider.primaryColor,
-                          fontSize: 18,
+                          width: 2,
                         ),
-                        maxLines: 1,
-                        // maxLength: 6,
-                        textAlign: TextAlign.center,
-                        textAlignVertical: TextAlignVertical.center,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: themeProvider.bgColor,
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none),
-                          contentPadding: EdgeInsets.zero,
-                          hintText: "Enter room code",
-                          hintStyle: TextStyle(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                      ),
+                      child: SizedBox(
+                        height: 48,
+                        width: width / 1.6,
+                        child: TextField(
+                          controller: roomCodeController,
+                          style: TextStyle(
                             color: themeProvider.primaryColor,
                             fontSize: 18,
+                          ),
+                          maxLines: 1,
+                          // maxLength: 6,
+                          textAlign: TextAlign.center,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: themeProvider.bgColor,
+                            border:
+                                OutlineInputBorder(borderSide: BorderSide.none),
+                            contentPadding: EdgeInsets.zero,
+                            hintText: "Enter room code",
+                            hintStyle: TextStyle(
+                              color: themeProvider.primaryColor,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
                   const VerticalSpacer(16),
-                  WidgetAnimator(
-                    incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                      delay: const Duration(milliseconds: 400),
-                      curve: Curves.easeInOut,
-                    ),
-                    child: Consumer2<RoomProvider, LoginProvider>(
-                        builder: (context, roomProvider, loginProvider, _) {
-                      return MyButton(
-                        onPressed: () async {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          if (roomCodeController.text.isNotEmpty) {
-                            int roomCodeInput =
-                                int.parse(roomCodeController.text);
-                            bool isRoomExist =
-                                await roomProvider.isRoomExist(roomCodeInput);
-                            if (!isRoomExist) {
-                              Fluttertoast.showToast(
-                                msg: "Room doesn't exist",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.CENTER,
-                              );
-                            } else {
-                              await roomProvider.joinRoom(
-                                loginProvider.getUserData,
-                                roomCodeInput,
-                                widget,
-                              );
-
-                              bool isRoomOwner = false;
-                              navigation
-                                  .changeScreenReplacement(
-                                GameScreenController(
-                                  roomCode: roomCodeInput,
-                                  isRoomOwner: isRoomOwner,
-                                ),
-                                widget,
-                              )
-                                  .then((value) async {
-                                /// delete the room;
-                                await Future.delayed(
-                                    const Duration(milliseconds: 800));
-                                roomProvider.leaveRoom(
-                                    roomCodeInput, isRoomOwner);
-                              });
-                            }
-                          } else {
+                  Consumer2<RoomProvider, LoginProvider>(
+                      builder: (context, roomProvider, loginProvider, _) {
+                    return MyButton(
+                      doStateChange: true,
+                      msDelay: 1200,
+                      onPressed: () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        if (roomCodeController.text.isNotEmpty) {
+                          int roomCodeInput =
+                              int.parse(roomCodeController.text);
+                          bool isRoomExist =
+                              await roomProvider.isRoomExist(roomCodeInput);
+                          if (!isRoomExist) {
                             Fluttertoast.showToast(
-                              msg: "Please enter a room code",
+                              msg: "Room doesn't exist",
                               toastLength: Toast.LENGTH_LONG,
                               gravity: ToastGravity.CENTER,
                             );
-                          }
-                        },
-                        text: "Join",
-                        showLoading: roomProvider.showJoinLoading,
-                      );
-                    }),
-                  ),
-                  const VerticalSpacer(32),
-                  TextAnimator(
-                    // TODO: change this animation
-                    "or",
-                    initialDelay: const Duration(milliseconds: 1200),
-                    incomingEffect:
-                        WidgetTransitionEffects.incomingSlideInFromLeft(),
-                    style: TextStyle(
-                      fontSize: defaultTextSize,
-                      color: themeProvider.secondaryColor,
-                    ),
-                  ),
-                  const VerticalSpacer(32),
-                  WidgetAnimator(
-                    incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                      delay: const Duration(milliseconds: 800),
-                      curve: Curves.easeInOut,
-                    ),
-                    atRestEffect: WidgetRestingEffects.wave(),
-                    child: Consumer2<RoomProvider, LoginProvider>(
-                        builder: (context, roomProvider, loginProvider, _) {
-                      return MyButton(
-                        onPressed: () async {
-                          int roomCode = await roomProvider.createRoom(
-                            loginProvider.getUserData,
-                            widget,
-                          );
+                          } else {
+                            await roomProvider.joinRoom(
+                              loginProvider.getUserData,
+                              roomCodeInput,
+                              widget,
+                            );
 
-                          bool isRoomOwner = true;
-                          navigation
-                              .changeScreenReplacement(
-                            GameScreenController(
-                              roomCode: roomCode,
-                              isRoomOwner: isRoomOwner,
-                            ),
-                            widget,
-                          )
-                              .then((value) async {
-                            print("delete the room");
-                            await Future.delayed(
-                                const Duration(milliseconds: 800));
-                            roomProvider.leaveRoom(roomCode, isRoomOwner);
-                          });
-                        },
-                        text: "Create room",
-                        showLoading: roomProvider.loading,
-                      );
-                    }),
+                            bool isRoomOwner = false;
+                            navigation
+                                .changeScreenReplacement(
+                              GameScreenController(
+                                roomCode: roomCodeInput,
+                                isRoomOwner: isRoomOwner,
+                              ),
+                              widget,
+                            )
+                                .then((value) async {
+                              /// delete the room;
+                              await Future.delayed(
+                                  const Duration(milliseconds: 800));
+                              roomProvider.leaveRoom(
+                                  roomCodeInput, isRoomOwner);
+                            });
+                          }
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: "Please enter a room code",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                          );
+                        }
+                      },
+                      text: "Join",
+                      showLoading: roomProvider.showJoinLoading,
+                    );
+                  }),
+                  const VerticalSpacer(32),
+                  AnimationOnWidget(
+                    useIncomingEffect: true,
+                    incomingEffect:
+                        WidgetTransitionEffects.incomingSlideInFromTop(
+                      delay: const Duration(milliseconds: 2000),
+                      curve: Curves.fastOutSlowIn,
+                    ),
+                    child: Text(
+                      "or",
+                      style: TextStyle(
+                        fontSize: defaultTextSize,
+                        color: themeProvider.secondaryColor,
+                      ),
+                    ),
                   ),
+                  const VerticalSpacer(32),
+                  Consumer2<RoomProvider, LoginProvider>(
+                      builder: (context, roomProvider, loginProvider, _) {
+                    return MyButton(
+                      doStateChange: true,
+                      msDelay: 1600,
+                      hasRestEffect: true,
+                      onPressed: () async {
+                        int roomCode = await roomProvider.createRoom(
+                          loginProvider.getUserData,
+                          widget,
+                        );
+
+                        bool isRoomOwner = true;
+
+                        navigation.changeScreenReplacement(
+                          GameScreenController(
+                            roomCode: roomCode,
+                            isRoomOwner: isRoomOwner,
+                          ),
+                          widget,
+                        );
+                      },
+                      text: "Create room",
+                      showLoading: roomProvider.loading,
+                    );
+                  }),
                 ],
               ),
             ),
             Positioned(
               top: 32,
               right: 32,
-              child: WidgetAnimator(
-                incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                  delay: const Duration(milliseconds: 1200),
-                  curve: Curves.easeInOut,
-                ),
+              child: AnimationOnWidget(
+                msDelay: 2000,
                 child: ElevatedButton(
                   onPressed: () {
                     Vibration.vibrate(duration: 80, amplitude: 120);

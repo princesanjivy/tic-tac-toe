@@ -53,11 +53,13 @@ class MyPopUp extends StatelessWidget {
                 ),
                 const VerticalSpacer(16),
                 MyButton(
+                  canAnimate: false,
                   text: button1Text,
                   onPressed: button1OnPressed,
                 ),
                 const VerticalSpacer(8),
                 MyButton(
+                  canAnimate: false,
                   text: button2Text,
                   onPressed: button2OnPressed,
                   invertColor: true,

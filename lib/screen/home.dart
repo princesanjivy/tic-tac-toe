@@ -8,6 +8,7 @@ import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/main.dart';
@@ -92,11 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const VerticalSpacer(48),
-                      WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                          delay: const Duration(milliseconds: 1600),
-                        ),
-                        atRestEffect: WidgetRestingEffects.wave(),
+                      AnimationOnWidget(
+                        hasRestEffect: true,
+                        msDelay: 1600,
                         child: Text(
                           "Select mode",
                           style: TextStyle(
@@ -106,37 +105,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const VerticalSpacer(32),
-                      WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                          delay: const Duration(milliseconds: 800),
-                          curve: Curves.easeInOut,
-                        ),
-                        child: MyButton(
-                          onPressed: () {
-                            print("Player vs AI mode");
-                            navigation.changeScreenReplacement(
-                              const SingleModeScreen(),
-                              widget,
-                            );
-                            // buttonClickPlayer
-                            //     .play(AssetSource("audio/click.wav"));
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => GameRoom()));
-                          },
-                          text: "Single",
-                        ),
+                      MyButton(
+                        msDelay: 800,
+                        onPressed: () {
+                          print("Player vs AI mode");
+                          navigation.changeScreenReplacement(
+                            const SingleModeScreen(),
+                            widget,
+                          );
+                          // buttonClickPlayer
+                          //     .play(AssetSource("audio/click.wav"));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => GameRoom()));
+                        },
+                        text: "Single",
                       ),
                       const VerticalSpacer(16),
-                      WidgetAnimator(
-                        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                          delay: const Duration(milliseconds: 1200),
-                          curve: Curves.easeInOut,
-                        ),
-                        child: Consumer<LoginProvider>(
-                            builder: (context, loginProvider, _) {
+                      Consumer<LoginProvider>(
+                        builder: (context, loginProvider, _) {
                           return MyButton(
+                            doStateChange: true,
+                            msDelay: 1200,
                             onPressed: () async {
                               User? user = FirebaseAuth.instance.currentUser;
                               if (user != null) {
@@ -160,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: "Online",
                             showLoading: loginProvider.loading,
                           );
-                        }),
+                        },
                       ),
                     ],
                   ),
@@ -170,11 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned(
               top: 32,
               right: 32,
-              child: WidgetAnimator(
-                incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                  delay: const Duration(milliseconds: 1600),
-                  curve: Curves.easeInOut,
-                ),
+              child: AnimationOnWidget(
+                msDelay: 1600,
                 child: ElevatedButton(
                   onPressed: () {
                     Vibration.vibrate(duration: 80, amplitude: 120);

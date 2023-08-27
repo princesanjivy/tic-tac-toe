@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:vibration/vibration.dart';
@@ -13,18 +14,26 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     this.showLoading = false,
     this.invertColor = false,
+    this.canAnimate = true,
+    this.doStateChange = false,
+    this.hasRestEffect = false,
+    this.msDelay,
   });
 
   final String text;
   final Function onPressed;
   final bool showLoading;
   final bool invertColor;
+  final bool canAnimate;
+  final int? msDelay;
+  final bool? doStateChange;
+  final bool? hasRestEffect;
 
   @override
   Widget build(BuildContext context) {
     double width = kIsWeb ? 400 : MediaQuery.of(context).size.width;
 
-    return ElevatedButton(
+    Widget buttonChild = ElevatedButton(
       onPressed: showLoading
           ? null
           : () {
@@ -65,5 +74,14 @@ class MyButton extends StatelessWidget {
               ),
             ),
     );
+
+    return canAnimate
+        ? AnimationOnWidget(
+            msDelay: msDelay,
+            doStateChange: doStateChange,
+            hasRestEffect: hasRestEffect!,
+            child: buttonChild,
+          )
+        : buttonChild;
   }
 }
