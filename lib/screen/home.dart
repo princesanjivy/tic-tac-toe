@@ -107,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const VerticalSpacer(32),
                       MyButton(
                         msDelay: 800,
+                        doStateChange: true,
                         onPressed: () {
                           print("Player vs AI mode");
                           navigation.changeScreenReplacement(

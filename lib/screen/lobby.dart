@@ -49,17 +49,6 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-
-    print("Lobby Dispose");
-    roomProvider.leaveRoom(
-      widget.roomData.code,
-      widget.isRoomOwner,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     double width = kIsWeb ? 600 : MediaQuery.of(context).size.width;
 
@@ -270,8 +259,10 @@ class _LobbyScreenState extends State<LobbyScreen> {
 
                     Consumer2<RoomProvider, GameProvider>(
                         builder: (context, roomProvider, gameProvider, _) {
+                      print(widget.roomData.players.length);
                       return MyButton(
                         msDelay: 1600,
+                        doStateChange: true,
                         text: widget.roomData.players.length == 2
                             ? widget.isRoomOwner
                                 ? "Start"

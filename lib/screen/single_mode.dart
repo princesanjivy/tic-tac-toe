@@ -23,23 +23,6 @@ class SingleModeScreen extends StatefulWidget {
 }
 
 class SingleModeScreenState extends State<SingleModeScreen> {
-  List<int> corners = [0, 3, 12, 15];
-
-  Map<int, BorderRadiusGeometry> borders = {
-    0: const BorderRadius.only(
-      topLeft: Radius.circular(16),
-    ),
-    3: const BorderRadius.only(
-      topRight: Radius.circular(16),
-    ),
-    12: const BorderRadius.only(
-      bottomLeft: Radius.circular(16),
-    ),
-    15: const BorderRadius.only(
-      bottomRight: Radius.circular(16),
-    ),
-  };
-
   late Navigation navigation;
 
   @override
@@ -171,8 +154,8 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                                     color: themeProvider.primaryColor,
                                     // width: 2,
                                   ),
-                                  borderRadius: corners.contains(index)
-                                      ? borders[index]
+                                  borderRadius: provider.corners.contains(index)
+                                      ? provider.borders[index]
                                       : null,
                                 ),
                                 child: Center(

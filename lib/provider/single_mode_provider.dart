@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/components/pop_up.dart';
+import 'package:tic_tac_toe/helper/board_desgin.dart' as helper;
 import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
+import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/helper/random_gen.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 
 class SingleModeProvider with ChangeNotifier {
-  List board = List.generate(16, (index) => 0);
+  List board = List.generate(9, (index) => 0); // Always start with 3*3 board
 
   Map<int, int> scores = {PlaySymbol.xInt: 0, PlaySymbol.oInt: 0};
   int round = 1;
@@ -19,6 +23,11 @@ class SingleModeProvider with ChangeNotifier {
 
   bool doStateChange = false;
 
+  List<int> corners = [];
+  Map<int, BorderRadiusGeometry> borders = {};
+
+  late Navigation navigation;
+
   void init(BuildContext c) {
     _context = c;
 
@@ -29,17 +38,17 @@ class SingleModeProvider with ChangeNotifier {
       aiChose = PlaySymbol.x;
       aiMove(aiChose);
     }
+    design();
+    navigation = Navigation(Navigator.of(c));
   }
 
   void aiMove(String chose) async {
     doStateChange = true;
     notifyListeners();
-    print(board);
-    print(turn);
-    print(playerChose);
+
     await Future.delayed(const Duration(milliseconds: 600), () {
       int index =
-      findBestMove(board, PlaySymbol.inNum(chose), getBoardSize(board));
+          findBestMove(board, PlaySymbol.inNum(chose), getBoardSize(board));
       bool skipCheck = false;
       {
         if (index == -1) {
@@ -49,7 +58,6 @@ class SingleModeProvider with ChangeNotifier {
           board[index] = PlaySymbol.inNum(chose);
           turn = (chose == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x);
 
-          // setState(() {});
           doStateChange = true;
           notifyListeners();
         }
@@ -81,33 +89,41 @@ class SingleModeProvider with ChangeNotifier {
 
     round += 1;
 
-    // setState(() {});
     doStateChange = true;
     notifyListeners();
 
-    showDialog(
-      context: _context,
+    PopUp.show(
+      _context,
+      title: "Game over",
+      description: "New game restarting in 5 seconds...",
+      button1Text: "Quit",
+      button2Text: "Rate game",
       barrierDismissible: false,
-      builder: (context) =>
-      const SimpleDialog(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("Game over\n\nRestarting in 5 seconds..."),
-          ),
-        ],
-      ),
+      button1OnPressed: () {
+        navigation.goBack(_context);
+        navigation.goBack(_context);
+      },
+      button2OnPressed: () {
+        // open play store;
+      },
     );
     await Future.delayed(const Duration(seconds: 5), () {
-      // board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-      board = List.generate(16, (index) => 0);
+      board = List.generate(generateRandomBoardSize(), (index) => 0);
+
       result = Result(false, []);
       turn = (chose == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x);
 
-      Navigator.pop(_context);
-      // setState(() {});
+      navigation.goBack(_context);
       doStateChange = true;
+      design();
+
       notifyListeners();
     });
+  }
+
+  void design() {
+    helper.BoardDesign bd = helper.boardDesign(board);
+    corners = bd.corners;
+    borders = bd.borders;
   }
 }

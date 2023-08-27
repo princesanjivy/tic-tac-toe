@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
@@ -51,7 +52,10 @@ class _RoomScreenState extends State<RoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = kIsWeb ? 400 : MediaQuery.of(context).size.width;
+    double width = kIsWeb ? 400 : MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
       return Scaffold(
@@ -66,7 +70,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   AnimationOnWidget(
                     useIncomingEffect: true,
                     incomingEffect:
-                        WidgetTransitionEffects.incomingSlideInFromTop(
+                    WidgetTransitionEffects.incomingSlideInFromTop(
                       delay: const Duration(milliseconds: 400),
                       curve: Curves.fastOutSlowIn,
                     ),
@@ -87,7 +91,7 @@ class _RoomScreenState extends State<RoomScreen> {
                           color: themeProvider.primaryColor,
                           width: 2,
                         ),
-                        borderRadius: BorderRadius.all(
+                        borderRadius: const BorderRadius.all(
                           Radius.circular(12),
                         ),
                       ),
@@ -105,11 +109,14 @@ class _RoomScreenState extends State<RoomScreen> {
                           textAlign: TextAlign.center,
                           textAlignVertical: TextAlignVertical.center,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: themeProvider.bgColor,
-                            border:
-                                OutlineInputBorder(borderSide: BorderSide.none),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide.none),
                             contentPadding: EdgeInsets.zero,
                             hintText: "Enter room code",
                             hintStyle: TextStyle(
@@ -124,63 +131,56 @@ class _RoomScreenState extends State<RoomScreen> {
                   const VerticalSpacer(16),
                   Consumer2<RoomProvider, LoginProvider>(
                       builder: (context, roomProvider, loginProvider, _) {
-                    return MyButton(
-                      doStateChange: true,
-                      msDelay: 1200,
-                      onPressed: () async {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        if (roomCodeController.text.isNotEmpty) {
-                          int roomCodeInput =
+                        return MyButton(
+                          doStateChange: true,
+                          msDelay: 1200,
+                          onPressed: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            if (roomCodeController.text.isNotEmpty) {
+                              int roomCodeInput =
                               int.parse(roomCodeController.text);
-                          bool isRoomExist =
+                              bool isRoomExist =
                               await roomProvider.isRoomExist(roomCodeInput);
-                          if (!isRoomExist) {
-                            Fluttertoast.showToast(
-                              msg: "Room doesn't exist",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.CENTER,
-                            );
-                          } else {
-                            await roomProvider.joinRoom(
-                              loginProvider.getUserData,
-                              roomCodeInput,
-                              widget,
-                            );
+                              if (!isRoomExist) {
+                                Fluttertoast.showToast(
+                                  msg: "Room doesn't exist",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                );
+                                roomCodeController.clear();
+                              } else {
+                                await roomProvider.joinRoom(
+                                  loginProvider.getUserData,
+                                  roomCodeInput,
+                                  widget,
+                                );
 
-                            bool isRoomOwner = false;
-                            navigation
-                                .changeScreenReplacement(
-                              GameScreenController(
-                                roomCode: roomCodeInput,
-                                isRoomOwner: isRoomOwner,
-                              ),
-                              widget,
-                            )
-                                .then((value) async {
-                              /// delete the room;
-                              await Future.delayed(
-                                  const Duration(milliseconds: 800));
-                              roomProvider.leaveRoom(
-                                  roomCodeInput, isRoomOwner);
-                            });
-                          }
-                        } else {
-                          Fluttertoast.showToast(
-                            msg: "Please enter a room code",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.CENTER,
-                          );
-                        }
-                      },
-                      text: "Join",
-                      showLoading: roomProvider.showJoinLoading,
-                    );
-                  }),
+                                bool isRoomOwner = false;
+                                navigation.changeScreenReplacement(
+                                  GameScreenController(
+                                    roomCode: roomCodeInput,
+                                    isRoomOwner: isRoomOwner,
+                                  ),
+                                  widget,
+                                );
+                              }
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: "Please enter a room code",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
+                              );
+                            }
+                          },
+                          text: "Join",
+                          showLoading: roomProvider.showJoinLoading,
+                        );
+                      }),
                   const VerticalSpacer(32),
                   AnimationOnWidget(
                     useIncomingEffect: true,
                     incomingEffect:
-                        WidgetTransitionEffects.incomingSlideInFromTop(
+                    WidgetTransitionEffects.incomingSlideInFromTop(
                       delay: const Duration(milliseconds: 2000),
                       curve: Curves.fastOutSlowIn,
                     ),
@@ -195,30 +195,30 @@ class _RoomScreenState extends State<RoomScreen> {
                   const VerticalSpacer(32),
                   Consumer2<RoomProvider, LoginProvider>(
                       builder: (context, roomProvider, loginProvider, _) {
-                    return MyButton(
-                      doStateChange: true,
-                      msDelay: 1600,
-                      hasRestEffect: true,
-                      onPressed: () async {
-                        int roomCode = await roomProvider.createRoom(
-                          loginProvider.getUserData,
-                          widget,
-                        );
+                        return MyButton(
+                          doStateChange: true,
+                          msDelay: 1600,
+                          hasRestEffect: true,
+                          onPressed: () async {
+                            int roomCode = await roomProvider.createRoom(
+                              loginProvider.getUserData,
+                              widget,
+                            );
 
-                        bool isRoomOwner = true;
+                            bool isRoomOwner = true;
 
-                        navigation.changeScreenReplacement(
-                          GameScreenController(
-                            roomCode: roomCode,
-                            isRoomOwner: isRoomOwner,
-                          ),
-                          widget,
+                            navigation.changeScreenReplacement(
+                              GameScreenController(
+                                roomCode: roomCode,
+                                isRoomOwner: isRoomOwner,
+                              ),
+                              widget,
+                            );
+                          },
+                          text: "Create room",
+                          showLoading: roomProvider.loading,
                         );
-                      },
-                      text: "Create room",
-                      showLoading: roomProvider.loading,
-                    );
-                  }),
+                      }),
                 ],
               ),
             ),
@@ -275,7 +275,7 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 }
 
-class GameScreenController extends StatelessWidget {
+class GameScreenController extends StatefulWidget {
   const GameScreenController({
     super.key,
     required this.roomCode,
@@ -286,12 +286,39 @@ class GameScreenController extends StatelessWidget {
   final bool isRoomOwner;
 
   @override
+  State<GameScreenController> createState() => _GameScreenControllerState();
+}
+
+class _GameScreenControllerState extends State<GameScreenController> {
+  late RoomProvider roomProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    roomProvider = Provider.of<RoomProvider>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    print("GameController Disposed");
+    roomProvider.leaveRoom(
+      widget.roomCode,
+      widget.isRoomOwner,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer2<GameProvider, ThemeProvider>(
       // TODO: remove this if not needed
       builder: (context, gameProvider, themeProvider, _) {
         return StreamBuilder<DatabaseEvent>(
-          stream: FirebaseDatabase.instance.ref("$roomPath$roomCode/").onValue,
+          stream: FirebaseDatabase.instance
+              .ref("$roomPath${widget.roomCode}/")
+              .onValue,
           builder: (context, db) {
             if (!db.hasData) {
               return Scaffold(
@@ -306,7 +333,7 @@ class GameScreenController extends StatelessWidget {
             }
             RoomData roomData = RoomData.fromJson(
               db.data!.snapshot.value,
-              roomCode,
+              widget.roomCode,
             );
             // print(roomData);
 
@@ -326,12 +353,13 @@ class GameScreenController extends StatelessWidget {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => const SimpleDialog(
+                    builder: (context) =>
+                    const SimpleDialog(
                       children: [
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child:
-                              Text("Game over\n\nRestarting in 5 seconds..."),
+                          Text("Game over\n\nRestarting in 5 seconds..."),
                         ),
                       ],
                     ),
@@ -341,21 +369,23 @@ class GameScreenController extends StatelessWidget {
                   "$roomPath${roomData.code}",
                   roomData,
                   player,
-                  isRoomOwner,
+                  widget.isRoomOwner,
                   context,
                 );
               }
 
               return GameScreen(
                 roomData: roomData,
-                isRoomOwner: isRoomOwner,
+                isRoomOwner: widget.isRoomOwner,
                 result: result,
               );
             }
 
+            print(roomData.toJson());
+            print(roomData.players.length);
             return LobbyScreen(
               roomData: roomData,
-              isRoomOwner: isRoomOwner,
+              isRoomOwner: widget.isRoomOwner,
             );
           },
         );

@@ -122,9 +122,7 @@ class _GameScreenState extends State<GameScreen> {
                         PlayerCard(
                           imageUrl: loginProvider.getUserData.displayPicture,
                           name:
-                          "You (${widget.roomData.players[!widget.isRoomOwner
-                              ? 1
-                              : 0].chose})",
+                              "You (${widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose})",
                           showScore: true,
                           scoreValue: widget.roomData
                               .players[!widget.isRoomOwner ? 1 : 0].winCount,
@@ -148,9 +146,7 @@ class _GameScreenState extends State<GameScreen> {
                             return PlayerCard(
                               imageUrl: snapshot.data!.displayPicture,
                               name:
-                              "${snapshot.data!.name.split(" ")[0]} (${widget
-                                  .roomData.players[widget.isRoomOwner ? 1 : 0]
-                                  .chose})",
+                                  "${snapshot.data!.name.split(" ")[0]} (${widget.roomData.players[widget.isRoomOwner ? 1 : 0].chose})",
                               showScore: true,
                               scoreValue: widget.roomData
                                   .players[widget.isRoomOwner ? 1 : 0].winCount,
@@ -182,7 +178,7 @@ class _GameScreenState extends State<GameScreen> {
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: getBoardSize(widget.roomData.board),
                             mainAxisSpacing: 1,
                             crossAxisSpacing: 1,
@@ -202,24 +198,23 @@ class _GameScreenState extends State<GameScreen> {
                                         widget
                                             .roomData
                                             .players[
-                                        !widget.isRoomOwner ? 1 : 0]
+                                                !widget.isRoomOwner ? 1 : 0]
                                             .chose) {
                                   FirebaseDatabase.instance
                                       .ref(
-                                    "$roomPath${widget.roomData
-                                        .code}/board/$index",
-                                  )
+                                        "$roomPath${widget.roomData.code}/board/$index",
+                                      )
                                       .set(PlaySymbol.inNum(
-                                      widget.roomData.turn));
+                                          widget.roomData.turn));
                                   FirebaseDatabase.instance
                                       .ref(
-                                    "$roomPath${widget.roomData.code}/turn",
-                                  )
+                                        "$roomPath${widget.roomData.code}/turn",
+                                      )
                                       .set(
-                                    widget.roomData.turn == PlaySymbol.x
-                                        ? PlaySymbol.o
-                                        : PlaySymbol.x,
-                                  );
+                                        widget.roomData.turn == PlaySymbol.x
+                                            ? PlaySymbol.o
+                                            : PlaySymbol.x,
+                                      );
                                 }
                               },
                               child: Container(
@@ -232,23 +227,23 @@ class _GameScreenState extends State<GameScreen> {
                                     // width: 2,
                                   ),
                                   borderRadius:
-                                  gameProvider.corners.contains(index)
-                                      ? gameProvider.borders[index]
-                                      : null,
+                                      gameProvider.corners.contains(index)
+                                          ? gameProvider.borders[index]
+                                          : null,
                                 ),
                                 child: Center(
                                   child: Text(
                                     widget.roomData.board[index] ==
-                                        PlaySymbol.xInt
+                                            PlaySymbol.xInt
                                         ? PlaySymbol.x
                                         : widget.roomData.board[index] ==
-                                        PlaySymbol.oInt
-                                        ? PlaySymbol.o
-                                        : "",
+                                                PlaySymbol.oInt
+                                            ? PlaySymbol.o
+                                            : "",
                                     style: GoogleFonts.hennyPenny(
                                       fontSize: 42 - 8,
                                       color: widget.result.positions
-                                          .contains(index)
+                                              .contains(index)
                                           ? themeProvider.bgColor
                                           : themeProvider.primaryColor,
                                     ),
@@ -270,8 +265,8 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                       child: Text(
                         (widget.roomData.turn ==
-                            widget.roomData
-                                .players[!widget.isRoomOwner ? 1 : 0].chose)
+                                widget.roomData
+                                    .players[!widget.isRoomOwner ? 1 : 0].chose)
                             ? "Your turn"
                             : "Opponent turn",
                         style: TextStyle(
@@ -305,7 +300,7 @@ class _GameScreenState extends State<GameScreen> {
                       AudioController.buttonClick("audio/click2.ogg");
 
                       RoomProvider roomProvider =
-                      Provider.of<RoomProvider>(context, listen: false);
+                          Provider.of<RoomProvider>(context, listen: false);
 
                       PopUp.show(
                         context,
@@ -321,6 +316,7 @@ class _GameScreenState extends State<GameScreen> {
                             const HomeScreen(),
                             widget,
                           );
+                          // room current player from the room
                         },
                         button2OnPressed: () {
                           Navigator.pop(context);
