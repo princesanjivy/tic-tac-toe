@@ -33,7 +33,8 @@ class SingleModeScreenState extends State<SingleModeScreen> {
   }
 
   void initProvider() {
-    Provider.of<SingleModeProvider>(context, listen: false).init(context);
+    Provider.of<SingleModeProvider>(context, listen: false)
+        .init(context, widget);
   }
 
   @override

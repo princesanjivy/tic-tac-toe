@@ -58,6 +58,10 @@ class ThemeProvider with ChangeNotifier {
     return _isLight ? _winColorLight : _winColorDark;
   }
 
+  bool get isLightTheme {
+    return _isLight;
+  }
+
   void changeTheme() {
     _isLight = !_isLight;
     setPrefs(_isLight);

@@ -6,6 +6,8 @@ import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/helper/random_gen.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
+import 'package:tic_tac_toe/screen/home.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SingleModeProvider with ChangeNotifier {
   List board = List.generate(9, (index) => 0); // Always start with 3*3 board
@@ -20,6 +22,7 @@ class SingleModeProvider with ChangeNotifier {
   Result result = Result(false, []);
 
   late BuildContext _context;
+  late Widget _widget;
 
   bool doStateChange = false;
 
@@ -28,8 +31,9 @@ class SingleModeProvider with ChangeNotifier {
 
   late Navigation navigation;
 
-  void init(BuildContext c) {
+  void init(BuildContext c, Widget w) {
     _context = c;
+    _widget = w;
 
     playerChose = PlaySymbol.x;
     if (playerChose == PlaySymbol.x) {
@@ -101,10 +105,16 @@ class SingleModeProvider with ChangeNotifier {
       barrierDismissible: false,
       button1OnPressed: () {
         navigation.goBack(_context);
-        navigation.goBack(_context);
+        navigation.changeScreenReplacement(
+          const HomeScreen(),
+          _widget,
+        );
       },
       button2OnPressed: () {
-        // open play store;
+        launchUrl(
+          Uri.parse(
+              "https://play.google.com/store/apps/details?id=com.princeappstudio.tic_tac_toe"),
+        );
       },
     );
     await Future.delayed(const Duration(seconds: 5), () {
