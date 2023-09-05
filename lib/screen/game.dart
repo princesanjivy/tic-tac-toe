@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
-import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
@@ -16,11 +16,8 @@ import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
-import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
-import 'package:vibration/vibration.dart';
-import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -286,72 +283,29 @@ class _GameScreenState extends State<GameScreen> {
                   ],
                 ),
               ),
-              Positioned(
-                top: 32,
-                right: 32,
-                child: WidgetAnimator(
-                  incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-                    delay: const Duration(milliseconds: 1200),
-                    curve: Curves.easeInOut,
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Vibration.vibrate(duration: 80, amplitude: 120);
-                      AudioController.buttonClick("audio/click2.ogg");
-
-                      RoomProvider roomProvider =
-                          Provider.of<RoomProvider>(context, listen: false);
-
-                      PopUp.show(
-                        context,
-                        title: "Info",
-                        description: "Are you sure want to leave the game?",
-                        button1Text: "Yes",
-                        button2Text: "No",
-                        barrierDismissible: false,
-                        button1OnPressed: () async {
-                          // TODO: close room and show info to other player as well
-
-                          await navigation.changeScreenReplacement(
-                            const HomeScreen(),
-                            widget,
-                          );
-                          // room current player from the room
-                        },
-                        button2OnPressed: () {
-                          Navigator.pop(context);
-                        },
+              MyIconButton(
+                msDelay: 1200,
+                iconData: Icons.arrow_back_ios_new_rounded,
+                onPressed: () {
+                  PopUp.show(
+                    context,
+                    title: "Info",
+                    description: "Are you sure want to leave the game?",
+                    button1Text: "Yes",
+                    button2Text: "No",
+                    barrierDismissible: false,
+                    button1OnPressed: () async {
+                      await navigation.changeScreenReplacement(
+                        const HomeScreen(),
+                        widget,
                       );
+                      // room current player from the room
                     },
-                    style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all<Size>(
-                        const Size(48, 48),
-                      ),
-                      elevation: MaterialStateProperty.all<double>(4),
-                      shape: MaterialStateProperty.all<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.all(0)),
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          themeProvider.primaryColor),
-                    ),
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded, // TODO: temp icon
-                      color: themeProvider.bgColor,
-                    ),
-                    // child: Text(
-                    //   "i",
-                    //   style: TextStyle(
-                    //     fontSize: defaultTextSize,
-                    //     color: bgColor,
-                    //     letterSpacing: 1,
-                    //   ),
-                    // ),
-                  ),
-                ),
+                    button2OnPressed: () {
+                      Navigator.pop(context);
+                    },
+                  );
+                },
               ),
             ],
           ),

@@ -5,10 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
+import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
-import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/check_win.dart' as helper;
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
@@ -21,7 +21,6 @@ import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/game.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:tic_tac_toe/screen/lobby.dart';
-import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -52,10 +51,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = kIsWeb ? 400 : MediaQuery
-        .of(context)
-        .size
-        .width;
+    double width = kIsWeb ? 400 : MediaQuery.of(context).size.width;
 
     return Consumer<ThemeProvider>(builder: (context, themeProvider, _) {
       return Scaffold(
@@ -70,7 +66,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   AnimationOnWidget(
                     useIncomingEffect: true,
                     incomingEffect:
-                    WidgetTransitionEffects.incomingSlideInFromTop(
+                        WidgetTransitionEffects.incomingSlideInFromTop(
                       delay: const Duration(milliseconds: 400),
                       curve: Curves.fastOutSlowIn,
                     ),
@@ -131,56 +127,56 @@ class _RoomScreenState extends State<RoomScreen> {
                   const VerticalSpacer(16),
                   Consumer2<RoomProvider, LoginProvider>(
                       builder: (context, roomProvider, loginProvider, _) {
-                        return MyButton(
-                          doStateChange: true,
-                          msDelay: 1200,
-                          onPressed: () async {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            if (roomCodeController.text.isNotEmpty) {
-                              int roomCodeInput =
+                    return MyButton(
+                      doStateChange: true,
+                      msDelay: 1200,
+                      onPressed: () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        if (roomCodeController.text.isNotEmpty) {
+                          int roomCodeInput =
                               int.parse(roomCodeController.text);
-                              bool isRoomExist =
+                          bool isRoomExist =
                               await roomProvider.isRoomExist(roomCodeInput);
-                              if (!isRoomExist) {
-                                Fluttertoast.showToast(
-                                  msg: "Room doesn't exist",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.CENTER,
-                                );
-                                roomCodeController.clear();
-                              } else {
-                                await roomProvider.joinRoom(
-                                  loginProvider.getUserData,
-                                  roomCodeInput,
-                                  widget,
-                                );
+                          if (!isRoomExist) {
+                            Fluttertoast.showToast(
+                              msg: "Room doesn't exist",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.CENTER,
+                            );
+                            roomCodeController.clear();
+                          } else {
+                            await roomProvider.joinRoom(
+                              loginProvider.getUserData,
+                              roomCodeInput,
+                              widget,
+                            );
 
-                                bool isRoomOwner = false;
-                                navigation.changeScreenReplacement(
-                                  GameScreenController(
-                                    roomCode: roomCodeInput,
-                                    isRoomOwner: isRoomOwner,
-                                  ),
-                                  widget,
-                                );
-                              }
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: "Please enter a room code",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.CENTER,
-                              );
-                            }
-                          },
-                          text: "Join",
-                          showLoading: roomProvider.showJoinLoading,
-                        );
-                      }),
+                            bool isRoomOwner = false;
+                            navigation.changeScreenReplacement(
+                              GameScreenController(
+                                roomCode: roomCodeInput,
+                                isRoomOwner: isRoomOwner,
+                              ),
+                              widget,
+                            );
+                          }
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: "Please enter a room code",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                          );
+                        }
+                      },
+                      text: "Join",
+                      showLoading: roomProvider.showJoinLoading,
+                    );
+                  }),
                   const VerticalSpacer(32),
                   AnimationOnWidget(
                     useIncomingEffect: true,
                     incomingEffect:
-                    WidgetTransitionEffects.incomingSlideInFromTop(
+                        WidgetTransitionEffects.incomingSlideInFromTop(
                       delay: const Duration(milliseconds: 2000),
                       curve: Curves.fastOutSlowIn,
                     ),
@@ -195,79 +191,89 @@ class _RoomScreenState extends State<RoomScreen> {
                   const VerticalSpacer(32),
                   Consumer2<RoomProvider, LoginProvider>(
                       builder: (context, roomProvider, loginProvider, _) {
-                        return MyButton(
-                          doStateChange: true,
-                          msDelay: 1600,
-                          hasRestEffect: true,
-                          onPressed: () async {
-                            int roomCode = await roomProvider.createRoom(
-                              loginProvider.getUserData,
-                              widget,
-                            );
-
-                            bool isRoomOwner = true;
-
-                            navigation.changeScreenReplacement(
-                              GameScreenController(
-                                roomCode: roomCode,
-                                isRoomOwner: isRoomOwner,
-                              ),
-                              widget,
-                            );
-                          },
-                          text: "Create room",
-                          showLoading: roomProvider.loading,
+                    return MyButton(
+                      doStateChange: true,
+                      msDelay: 1600,
+                      hasRestEffect: true,
+                      onPressed: () async {
+                        int roomCode = await roomProvider.createRoom(
+                          loginProvider.getUserData,
+                          widget,
                         );
-                      }),
+
+                        bool isRoomOwner = true;
+
+                        navigation.changeScreenReplacement(
+                          GameScreenController(
+                            roomCode: roomCode,
+                            isRoomOwner: isRoomOwner,
+                          ),
+                          widget,
+                        );
+                      },
+                      text: "Create room",
+                      showLoading: roomProvider.loading,
+                    );
+                  }),
                 ],
               ),
             ),
-            Positioned(
-              top: 32,
-              right: 32,
-              child: AnimationOnWidget(
-                msDelay: 2000,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Vibration.vibrate(duration: 80, amplitude: 120);
-                    AudioController.buttonClick("audio/click2.ogg");
-
-                    // Navigation.goBack(context);
-                    navigation.changeScreenReplacement(
-                      const HomeScreen(),
-                      widget,
-                    );
-                  },
-                  style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all<Size>(
-                      const Size(48, 48),
-                    ),
-                    elevation: MaterialStateProperty.all<double>(4),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.all(0)),
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        themeProvider.primaryColor),
-                  ),
-                  child: Icon(
-                    Icons.arrow_back_ios_new_rounded, // TODO: temp icon
-                    color: themeProvider.bgColor,
-                  ),
-                  // child: Text(
-                  //   "i",
-                  //   style: TextStyle(
-                  //     fontSize: defaultTextSize,
-                  //     color: bgColor,
-                  //     letterSpacing: 1,
-                  //   ),
-                  // ),
-                ),
-              ),
-            ),
+            MyIconButton(
+              onPressed: () {
+                navigation.changeScreenReplacement(
+                  const HomeScreen(),
+                  widget,
+                );
+              },
+              msDelay: 2000,
+              iconData: Icons.arrow_back_ios_new_rounded,
+            )
+            // Positioned(
+            //   top: 32,
+            //   right: 32,
+            //   child: AnimationOnWidget(
+            //     msDelay: 2000,
+            //     child: ElevatedButton(
+            //       onPressed: () {
+            //         Vibration.vibrate(duration: 80, amplitude: 120);
+            //         AudioController.buttonClick("audio/click2.ogg");
+            //
+            //         // Navigation.goBack(context);
+            //         navigation.changeScreenReplacement(
+            //           const HomeScreen(),
+            //           widget,
+            //         );
+            //       },
+            //       style: ButtonStyle(
+            //         minimumSize: MaterialStateProperty.all<Size>(
+            //           const Size(48, 48),
+            //         ),
+            //         elevation: MaterialStateProperty.all<double>(4),
+            //         shape: MaterialStateProperty.all<OutlinedBorder>(
+            //           RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(12),
+            //           ),
+            //         ),
+            //         padding: MaterialStateProperty.all<EdgeInsets>(
+            //             const EdgeInsets.all(0)),
+            //         backgroundColor: MaterialStateProperty.all<Color>(
+            //             themeProvider.primaryColor),
+            //       ),
+            //       child: Icon(
+            //         Icons.arrow_back_ios_new_rounded, // TODO: temp icon
+            //         color: themeProvider.bgColor,
+            //       ),
+            //       // child: Text(
+            //       //   "i",
+            //       //   style: TextStyle(
+            //       //     fontSize: defaultTextSize,
+            //       //     color: bgColor,
+            //       //     letterSpacing: 1,
+            //       //   ),
+            //       // ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       );
@@ -353,13 +359,12 @@ class _GameScreenControllerState extends State<GameScreenController> {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) =>
-                    const SimpleDialog(
+                    builder: (context) => const SimpleDialog(
                       children: [
                         Padding(
                           padding: EdgeInsets.all(8.0),
                           child:
-                          Text("Game over\n\nRestarting in 5 seconds..."),
+                              Text("Game over\n\nRestarting in 5 seconds..."),
                         ),
                       ],
                     ),

@@ -1,13 +1,27 @@
 import 'package:audioplayers/audioplayers.dart';
 
 class AudioController {
-  static bool playAudio = true;
-  static AudioPlayer player = AudioPlayer();
+  static final AudioController _audioController = AudioController._internal();
 
-  static void buttonClick(String audioClip) {
+  bool playAudio = true;
+  late AssetSource source;
+  AudioPlayer player = AudioPlayer();
+
+  factory AudioController() {
+    return _audioController;
+  }
+
+  AudioController._internal() {
+    init();
+  }
+
+  void init() async {
+    source = AssetSource("audio/click2.ogg");
+  }
+
+  void buttonClick() async {
     if (playAudio) {
-      player.stop();
-      player.play(AssetSource(audioClip));
+      await player.play(source);
     }
   }
 }

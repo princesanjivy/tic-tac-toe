@@ -5,17 +5,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
+import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
-import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
 import 'package:tic_tac_toe/screen/settings.dart';
 import 'package:tic_tac_toe/screen/single_mode.dart';
-import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -165,68 +164,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 32,
-                  right: 32,
-                  child: AnimationOnWidget(
-                    msDelay: 1600,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Vibration.vibrate(duration: 80, amplitude: 120);
-                        AudioController.buttonClick("audio/click2.ogg");
-
-                        navigation.changeScreenReplacement(
-                          const SettingsPage(),
-                          widget,
-                        );
-                        //
-                        // PopUp.show(
-                        //   context,
-                        //   title: "Info",
-                        //   description: "App settings will appear here!",
-                        //   button1Text: "Change theme",
-                        //   button2Text: "Logout",
-                        //   barrierDismissible: true,
-                        //   button1OnPressed: () {
-                        //     Provider.of<ThemeProvider>(
-                        //       context,
-                        //       listen: false,
-                        //     ).changeTheme();
-                        //     Navigator.pop(context);
-                        //     navigation.changeScreenReplacement(
-                        //         const ScreenController(), widget);
-                        //   },
-                        //   button2OnPressed: () {
-                        //     LoginProvider loginProvider =
-                        //         Provider.of<LoginProvider>(context,
-                        //             listen: false);
-                        //
-                        //     loginProvider.logout();
-                        //   },
-                        // );
-                      },
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all<Size>(
-                          const Size(48, 48),
-                        ),
-                        elevation: MaterialStateProperty.all<double>(4),
-                        shape: MaterialStateProperty.all<OutlinedBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.all(0)),
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            themeProvider.primaryColor),
-                      ),
-                      child: Icon(
-                        Icons.settings,
-                        color: themeProvider.bgColor,
-                      ),
-                    ),
-                  ),
-                ),
+                MyIconButton(
+                  msDelay: 1600,
+                  iconData: Icons.settings,
+                  onPressed: () {
+                    navigation.changeScreenReplacement(
+                      const SettingsPage(),
+                      widget,
+                    );
+                  },
+                )
               ],
             ),
           ),

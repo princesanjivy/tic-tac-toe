@@ -27,8 +27,7 @@ void main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.white),
   );
 
-  AudioController.playAudio =
-      false; // TODO: remove this once shared prefs is in place
+  AudioController audioController = AudioController(); // create empty object to call init()
 
   runApp(
     MultiProvider(
@@ -69,14 +68,16 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: false,
         textTheme: GoogleFonts.judsonTextTheme().copyWith(
-            // bodyMedium: GoogleFonts.judson(
-            //   color: secondaryColor,
-            //   fontSize: defaultTextSize,
-            // ),
-            ),
+          // bodyMedium: GoogleFonts.judson(
+          //   color: secondaryColor,
+          //   fontSize: defaultTextSize,
+          // ),
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor:
-              Provider.of<ThemeProvider>(context, listen: true).primaryColor,
+          Provider
+              .of<ThemeProvider>(context, listen: true)
+              .primaryColor,
         ),
       ),
       scrollBehavior: NoThumbScrollBehavior().copyWith(scrollbars: false),
@@ -94,26 +95,26 @@ class ScreenController extends StatelessWidget {
       builder: (context, theme, _) {
         return theme.showLoading
             ? const Scaffold(
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Center(
-                      //   child: CircularProgressIndicator(),
-                      // ),
-                      Text(
-                        "princeappstudio\npresents",
-                        style: TextStyle(
-                          color: Colors.cyan,
-                          fontSize: 22,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Center(
+                //   child: CircularProgressIndicator(),
+                // ),
+                Text(
+                  "princeappstudio\npresents",
+                  style: TextStyle(
+                    color: Colors.cyan,
+                    fontSize: 22,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              )
+              ],
+            ),
+          ),
+        )
             : const HomeScreen();
       },
     );
@@ -122,7 +123,8 @@ class ScreenController extends StatelessWidget {
 
 class NoThumbScrollBehavior extends ScrollBehavior {
   @override
-  Set<PointerDeviceKind> get dragDevices => {
+  Set<PointerDeviceKind> get dragDevices =>
+      {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
         PointerDeviceKind.stylus,

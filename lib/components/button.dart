@@ -36,11 +36,13 @@ class MyButton extends StatelessWidget {
     Widget buttonChild = ElevatedButton(
       onPressed: showLoading
           ? null
-          : () {
+          : () async {
               if (!kIsWeb) {
                 Vibration.vibrate(duration: 80, amplitude: 120);
               }
-              AudioController.buttonClick("audio/click2.ogg");
+              AudioController audioController = AudioController();
+              audioController.buttonClick();
+              await Future.delayed(Duration(milliseconds: msAnimationDelay));
               onPressed();
             },
       style: ButtonStyle(
