@@ -295,14 +295,14 @@ class _LobbyScreenState extends State<LobbyScreen> {
                   onPressed: () {
                     PopUp.show(
                       context,
-                      title: "Info",
+                      title: "Warning",
                       description: "Are you sure want to leave?",
                       button1Text: "Yes",
                       button2Text: "No",
                       barrierDismissible: false,
                       button1OnPressed: () async {
-                        navigation
-                            .goBack(context); // To remove GameController Widget
+                        navigation.goBack(context);
+                        // To remove GameController Widget
                         await navigation.changeScreenReplacement(
                           const RoomScreen(),
                           widget,

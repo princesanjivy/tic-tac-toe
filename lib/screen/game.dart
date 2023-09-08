@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/player_card.dart';
@@ -17,7 +18,7 @@ import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
-import 'package:tic_tac_toe/screen/home.dart';
+import 'package:tic_tac_toe/screen/room.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -92,17 +93,62 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Consumer3<LoginProvider, GameProvider, ThemeProvider>(
       builder: (context, loginProvider, gameProvider, themeProvider, _) {
-        // if (gameProvider.showLoading) {
-        //   return Scaffold(
-        //     backgroundColor: bgColor,
-        //     body: Center(
-        //       child: CircularProgressIndicator(
-        //         color: primaryColor,
-        //         strokeWidth: 2,
-        //       ),
-        //     ),
-        //   );
-        // }
+        // See if any player leaves the game, show popup and go to HomeScreen()
+        if (widget.roomData.players.length <= 1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            PopUp.show(
+              context,
+              title: "Oops!",
+              description: "Player 1 has left the game.\n"
+                  "Do you want to wait a player to join back?",
+              button1Text: "Yes",
+              button2Text: "Leave",
+              barrierDismissible: false,
+              button1OnPressed: () async {
+                navigation.goBack(context);
+              },
+              button2OnPressed: () async {
+                navigation.goBack(context);
+                // To remove GameController Widget
+                await navigation.changeScreenReplacement(
+                  const RoomScreen(),
+                  widget,
+                );
+              },
+            );
+          });
+
+          return Scaffold(
+            backgroundColor: themeProvider.bgColor,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Waiting for Player to join...",
+                    style: TextStyle(
+                      fontSize: defaultTextSize + 2,
+                      color: themeProvider.secondaryColor,
+                    ),
+                  ),
+                  const VerticalSpacer(8),
+                  MyButton(
+                    text: "Leave game",
+                    msDelay: 100,
+                    onPressed: () async {
+                      // To remove GameController Widget
+                      await navigation.changeScreenReplacement(
+                        const RoomScreen(),
+                        widget,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
         return Scaffold(
           backgroundColor: themeProvider.bgColor,
           body: Stack(
@@ -289,17 +335,18 @@ class _GameScreenState extends State<GameScreen> {
                 onPressed: () {
                   PopUp.show(
                     context,
-                    title: "Info",
+                    title: "Warning",
                     description: "Are you sure want to leave the game?",
                     button1Text: "Yes",
                     button2Text: "No",
                     barrierDismissible: false,
                     button1OnPressed: () async {
+                      navigation.goBack(context);
+                      // To remove GameController Widget
                       await navigation.changeScreenReplacement(
-                        const HomeScreen(),
+                        const RoomScreen(),
                         widget,
                       );
-                      // room current player from the room
                     },
                     button2OnPressed: () {
                       Navigator.pop(context);

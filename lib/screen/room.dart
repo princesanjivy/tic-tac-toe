@@ -297,11 +297,13 @@ class GameScreenController extends StatefulWidget {
 
 class _GameScreenControllerState extends State<GameScreenController> {
   late RoomProvider roomProvider;
+  late Navigation navigation;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    navigation = Navigation(Navigator.of(context));
     roomProvider = Provider.of<RoomProvider>(context, listen: false);
   }
 
@@ -336,6 +338,10 @@ class _GameScreenControllerState extends State<GameScreenController> {
                   ),
                 ),
               );
+            }
+            if (db.data!.snapshot.value == null) {
+              print("Room closed/deleted in firestore!");
+              return const HomeScreen();
             }
             RoomData roomData = RoomData.fromJson(
               db.data!.snapshot.value,

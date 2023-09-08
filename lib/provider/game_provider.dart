@@ -15,6 +15,8 @@ class GameProvider with ChangeNotifier {
   List<int> corners = [];
   Map<int, BorderRadiusGeometry> borders = {};
 
+  String button1Text = "Yes";
+
   Result get result {
     return _result;
   }
@@ -90,6 +92,15 @@ class GameProvider with ChangeNotifier {
     }
 
     // showLoading = false;
+    notifyListeners();
+  }
+
+  String get popUpButtonText {
+    return button1Text;
+  }
+
+  set popUpButtonTextChange(String val) {
+    button1Text = val;
     notifyListeners();
   }
 }
