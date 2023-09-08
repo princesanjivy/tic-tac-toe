@@ -18,26 +18,33 @@ class LoginProvider with ChangeNotifier {
   }
 
   Future<UserCredential> loginWithGoogle() async {
+    late UserCredential userCredential;
     loading = true;
-    final GoogleSignInAccount? googleUser = await GoogleSignIn(
-            clientId:
-                "1052229586554-sfgsc4r16hsce5l5f4d4rrrc2cu24lqg.apps.googleusercontent.com")
-        .signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+          clientId:
+          "1052229586554-sfgsc4r16hsce5l5f4d4rrrc2cu24lqg.apps.googleusercontent.com")
+          .signIn();
+      final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
 
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    loading = false;
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
 
-    // add user to firestore database
-    FirebaseFirestore.instance.collection("users").add(getUserData.toDbJson());
+      userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+
+      // add user to firestore database
+      FirebaseFirestore.instance.collection("users").add(
+          getUserData.toDbJson());
+    } finally {
+      loading = false;
+    }
 
     return userCredential;
   }

@@ -8,7 +8,7 @@ initialize_app()
 @scheduler_fn.on_schedule(schedule="0 * * * *")
 def on_every_hour(event: scheduler_fn.ScheduledEvent) -> None:
     date_format = "%Y-%m-%d %H:%M:%S.%f" # eg: 2023-07-26 21:43:50.019983
-    path = db.reference("roomV1/")
+    path = db.reference("room/")
     data = path.get()
 
     print(data)
