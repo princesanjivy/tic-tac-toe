@@ -41,7 +41,7 @@ class MyButton extends StatelessWidget {
                 Vibration.vibrate(duration: 80, amplitude: 120);
               }
               AudioController audioController = AudioController();
-              audioController.buttonClick();
+              audioController.buttonClick(context);
               await Future.delayed(Duration(milliseconds: msAnimationDelay));
               onPressed();
             },

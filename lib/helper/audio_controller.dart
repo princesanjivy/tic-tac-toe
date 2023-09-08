@@ -1,9 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'package:tic_tac_toe/provider/audio_provider.dart';
 
 class AudioController {
   static final AudioController _audioController = AudioController._internal();
 
-  bool playAudio = true;
+  // bool playAudio = true;
   late AssetSource source;
   AudioPlayer player = AudioPlayer();
 
@@ -19,8 +22,10 @@ class AudioController {
     source = AssetSource("audio/click2.ogg");
   }
 
-  void buttonClick() async {
-    if (playAudio) {
+  void buttonClick(BuildContext context) async {
+    AudioProvider audioProvider =
+        Provider.of<AudioProvider>(context, listen: false);
+    if (audioProvider.canPlayAudio) {
       await player.play(source);
     }
   }

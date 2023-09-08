@@ -8,6 +8,7 @@ import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/provider/audio_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
@@ -33,8 +34,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) {
+    return Consumer2<ThemeProvider, AudioProvider>(
+      builder: (context, themeProvider, audioProvider, _) {
         return WillPopScope(
           onWillPop: () async {
             return false;
@@ -76,7 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                "Game audio",
+                                "Disable Game audio",
                                 style: TextStyle(
                                   fontSize: defaultTextSize + 2,
                                   color: themeProvider.secondaryColor,
@@ -90,9 +91,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                 inactiveThumbColor: themeProvider.primaryColor,
                                 inactiveTrackColor:
                                     themeProvider.primaryColor.withOpacity(0.5),
-                                value: !themeProvider.isLightTheme,
+                                value: !audioProvider.canPlayAudio,
                                 onChanged: (value) {
-                                  themeProvider.changeTheme();
+                                  audioProvider.setPlayAudio();
                                 },
                               ),
                             ],

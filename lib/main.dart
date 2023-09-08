@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/firebase_options.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/provider/audio_provider.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
@@ -27,7 +28,8 @@ void main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.white),
   );
 
-  AudioController audioController = AudioController(); // create empty object to call init()
+  AudioController audioController =
+      AudioController(); // create empty object to call init()
 
   runApp(
     MultiProvider(
@@ -43,6 +45,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => ThemeProvider.init(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AudioProvider.init(),
         ),
         ChangeNotifierProvider(
           create: (context) => SingleModeProvider(),
@@ -68,16 +73,14 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: false,
         textTheme: GoogleFonts.judsonTextTheme().copyWith(
-          // bodyMedium: GoogleFonts.judson(
-          //   color: secondaryColor,
-          //   fontSize: defaultTextSize,
-          // ),
-        ),
+            // bodyMedium: GoogleFonts.judson(
+            //   color: secondaryColor,
+            //   fontSize: defaultTextSize,
+            // ),
+            ),
         colorScheme: ColorScheme.fromSeed(
           seedColor:
-          Provider
-              .of<ThemeProvider>(context, listen: true)
-              .primaryColor,
+              Provider.of<ThemeProvider>(context, listen: true).primaryColor,
         ),
       ),
       scrollBehavior: NoThumbScrollBehavior().copyWith(scrollbars: false),
@@ -95,26 +98,26 @@ class ScreenController extends StatelessWidget {
       builder: (context, theme, _) {
         return theme.showLoading
             ? const Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Center(
-                //   child: CircularProgressIndicator(),
-                // ),
-                Text(
-                  "princeappstudio\npresents",
-                  style: TextStyle(
-                    color: Colors.cyan,
-                    fontSize: 22,
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Center(
+                      //   child: CircularProgressIndicator(),
+                      // ),
+                      Text(
+                        "princeappstudio\npresents",
+                        style: TextStyle(
+                          color: Colors.cyan,
+                          fontSize: 22,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ],
-            ),
-          ),
-        )
+              )
             : const HomeScreen();
       },
     );
@@ -123,8 +126,7 @@ class ScreenController extends StatelessWidget {
 
 class NoThumbScrollBehavior extends ScrollBehavior {
   @override
-  Set<PointerDeviceKind> get dragDevices =>
-      {
+  Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
         PointerDeviceKind.stylus,

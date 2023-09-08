@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/constants.dart';
+import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:vibration/vibration.dart';
-import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class MyIconButton extends StatelessWidget {
   const MyIconButton({
@@ -24,18 +24,16 @@ class MyIconButton extends StatelessWidget {
     return Positioned(
       top: 32,
       right: 32,
-      child: WidgetAnimator(
-        incomingEffect: WidgetTransitionEffects.incomingScaleUp(
-          delay: const Duration(milliseconds: 1200),
-          curve: Curves.easeInOut,
-        ),
+      child: AnimationOnWidget(
+        msDelay: 1200, // need to change \ get as arg
+        doStateChange: true,
         child: ElevatedButton(
           onPressed: () async {
             if (!kIsWeb) {
               Vibration.vibrate(duration: 80, amplitude: 120);
             }
             AudioController audioController = AudioController();
-            audioController.buttonClick();
+            audioController.buttonClick(context);
             await Future.delayed(Duration(milliseconds: msAnimationDelay));
             onPressed();
           },
