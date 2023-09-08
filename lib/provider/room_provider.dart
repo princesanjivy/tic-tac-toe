@@ -27,7 +27,8 @@ class RoomProvider with ChangeNotifier {
     int code = generateRandomRoomCode();
     int round = 1;
     // int code = 123465; // for testing;
-    List board = List.generate(generateRandomBoardSize(), (index) => 0);
+    // List board = List.generate(generateRandomBoardSize(), (index) => 0);
+    List board = List.generate(9, (index) => 0);
 
     player.chose = PlaySymbol.x;
     List<Player> players = [];

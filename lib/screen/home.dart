@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
+import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
@@ -112,17 +113,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             msDelay: 800,
                             doStateChange: true,
                             onPressed: () {
-                              print("Player vs AI mode");
-                              navigation.changeScreenReplacement(
-                                const SingleModeScreen(),
-                                widget,
+                              PopUp.show(
+                                context,
+                                title: "Select mode",
+                                description:
+                                    "Do you want to play against AI or with another Player?",
+                                button1Text: "AI",
+                                button2Text: "Player",
+                                barrierDismissible: true,
+                                button1OnPressed: () {
+                                  navigation.changeScreenReplacement(
+                                    const SingleModeScreen(
+                                      twoPlayerMode: false,
+                                    ),
+                                    widget,
+                                  );
+                                },
+                                button2OnPressed: () {
+                                  navigation.changeScreenReplacement(
+                                    const SingleModeScreen(
+                                      twoPlayerMode: true,
+                                    ),
+                                    widget,
+                                  );
+                                },
                               );
-                              // buttonClickPlayer
-                              //     .play(AssetSource("audio/click.wav"));
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => GameRoom()));
                             },
                             text: "Single",
                           ),

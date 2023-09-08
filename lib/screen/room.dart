@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
+import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/check_win.dart' as helper;
@@ -21,6 +22,7 @@ import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/game.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:tic_tac_toe/screen/lobby.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -227,53 +229,7 @@ class _RoomScreenState extends State<RoomScreen> {
               },
               msDelay: 2000,
               iconData: Icons.arrow_back_ios_new_rounded,
-            )
-            // Positioned(
-            //   top: 32,
-            //   right: 32,
-            //   child: AnimationOnWidget(
-            //     msDelay: 2000,
-            //     child: ElevatedButton(
-            //       onPressed: () {
-            //         Vibration.vibrate(duration: 80, amplitude: 120);
-            //         AudioController.buttonClick("audio/click2.ogg");
-            //
-            //         // Navigation.goBack(context);
-            //         navigation.changeScreenReplacement(
-            //           const HomeScreen(),
-            //           widget,
-            //         );
-            //       },
-            //       style: ButtonStyle(
-            //         minimumSize: MaterialStateProperty.all<Size>(
-            //           const Size(48, 48),
-            //         ),
-            //         elevation: MaterialStateProperty.all<double>(4),
-            //         shape: MaterialStateProperty.all<OutlinedBorder>(
-            //           RoundedRectangleBorder(
-            //             borderRadius: BorderRadius.circular(12),
-            //           ),
-            //         ),
-            //         padding: MaterialStateProperty.all<EdgeInsets>(
-            //             const EdgeInsets.all(0)),
-            //         backgroundColor: MaterialStateProperty.all<Color>(
-            //             themeProvider.primaryColor),
-            //       ),
-            //       child: Icon(
-            //         Icons.arrow_back_ios_new_rounded, // TODO: temp icon
-            //         color: themeProvider.bgColor,
-            //       ),
-            //       // child: Text(
-            //       //   "i",
-            //       //   style: TextStyle(
-            //       //     fontSize: defaultTextSize,
-            //       //     color: bgColor,
-            //       //     letterSpacing: 1,
-            //       //   ),
-            //       // ),
-            //     ),
-            //   ),
-            // ),
+            ),
           ],
         ),
       );
@@ -321,7 +277,6 @@ class _GameScreenControllerState extends State<GameScreenController> {
   @override
   Widget build(BuildContext context) {
     return Consumer2<GameProvider, ThemeProvider>(
-      // TODO: remove this if not needed
       builder: (context, gameProvider, themeProvider, _) {
         return StreamBuilder<DatabaseEvent>(
           stream: FirebaseDatabase.instance
@@ -360,20 +315,32 @@ class _GameScreenControllerState extends State<GameScreenController> {
                 getBoardSize(roomData.board),
               );
               if (result.hasWon || !roomData.board.contains(0)) {
-                print("Game over");
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showDialog(
-                    context: context,
+                WidgetsBinding.instance.addPostFrameCallback((_) async {
+                  String wonMsg =
+                      "${(player == PlaySymbol.xInt && widget.isRoomOwner) || (player != PlaySymbol.xInt && !widget.isRoomOwner) ? "You" : "Opponent"} won this round!\n\n";
+                  PopUp.show(
+                    context,
+                    title: result.hasWon ? "Win" : "Game draw",
+                    description: result.hasWon
+                        ? wonMsg
+                        : ""
+                            "Next round restarting in 5 seconds...",
+                    button2Text: "Quit",
+                    button1Text: "Share & Rate game",
                     barrierDismissible: false,
-                    builder: (context) => const SimpleDialog(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child:
-                              Text("Game over\n\nRestarting in 5 seconds..."),
-                        ),
-                      ],
-                    ),
+                    button2OnPressed: () {
+                      navigation.goBack(context);
+                      navigation.changeScreenReplacement(
+                        const HomeScreen(),
+                        widget,
+                      );
+                    },
+                    button1OnPressed: () {
+                      navigation.goBack(context);
+                      launchUrl(
+                        Uri.parse(gameLinkAndroid),
+                      );
+                    },
                   );
                 });
                 gameProvider.resetBoard(

@@ -34,7 +34,6 @@ class GameProvider with ChangeNotifier {
         late List board;
         if (isRoomOwner) {
           board = List.generate(generateRandomBoardSize(), (index) => 0);
-          print("Reset board: $board");
 
           FirebaseDatabase.instance.ref(refPath).update({
             // "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -56,12 +55,13 @@ class GameProvider with ChangeNotifier {
         } else {
           // TODO: change designBoard to const to avoid this call to fb.
           DatabaseEvent databaseEvent =
-              await FirebaseDatabase.instance.ref(refPath + "/board").once();
+              await FirebaseDatabase.instance.ref("$refPath/board").once();
           board = databaseEvent.snapshot.value as List;
           print("Reset board: $board");
           designBoard(
               board); // TODO: remove this to get rid of state error during build
 
+          // ignore: use_build_context_synchronously
           Navigator.pop(context);
         }
       },

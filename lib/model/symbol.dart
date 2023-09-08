@@ -1,6 +1,7 @@
 class PlaySymbol {
   static const String _symbolX = "X";
   static const String _symbolO = "O";
+  static const String _symbolDraw = "Draw";
 
   static const int _symbolXInt = 1;
   static const int _symbolOInt = 2;
@@ -11,6 +12,10 @@ class PlaySymbol {
 
   static get o {
     return _symbolO;
+  }
+
+  static get draw {
+    return _symbolDraw;
   }
 
   static get xInt {

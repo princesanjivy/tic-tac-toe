@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/components/pop_up.dart';
+import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/board_desgin.dart' as helper;
 import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
@@ -23,6 +24,7 @@ class SingleModeProvider with ChangeNotifier {
 
   late BuildContext _context;
   late Widget _widget;
+  late bool _twoPlayerMode;
 
   bool doStateChange = false;
 
@@ -31,9 +33,10 @@ class SingleModeProvider with ChangeNotifier {
 
   late Navigation navigation;
 
-  void init(BuildContext c, Widget w) {
+  void init(BuildContext c, Widget w, bool b) {
     _context = c;
     _widget = w;
+    _twoPlayerMode = b;
 
     playerChose = PlaySymbol.x;
     if (playerChose == PlaySymbol.x) {
@@ -44,6 +47,71 @@ class SingleModeProvider with ChangeNotifier {
     }
     design();
     navigation = Navigation(Navigator.of(c));
+  }
+
+  void validate() async {
+    Result resultX = checkWin(board, PlaySymbol.xInt, getBoardSize(board));
+    Result resultO = checkWin(board, PlaySymbol.oInt, getBoardSize(board));
+
+    if (resultX.hasWon) {
+      print("Player 1 (X) wins!");
+      result = resultX;
+      scores[PlaySymbol.xInt] = scores[PlaySymbol.xInt]! + 1;
+      displayTwoPlayerModeResult(PlaySymbol.x);
+    } else if (resultO.hasWon) {
+      print("Player 2 (O) wins!");
+      result = resultO;
+      scores[PlaySymbol.oInt] = scores[PlaySymbol.oInt]! + 1;
+      displayTwoPlayerModeResult(PlaySymbol.o);
+    } else {
+      if (!board.contains(0)) {
+        displayTwoPlayerModeResult(PlaySymbol.draw);
+      }
+    }
+
+    doStateChange = true;
+    notifyListeners();
+  }
+
+  void displayTwoPlayerModeResult(String winner) async {
+    round += 1;
+
+    PopUp.show(
+      _context,
+      title: winner == PlaySymbol.draw
+          ? "Game draw"
+          : winner == PlaySymbol.x
+              ? "X won"
+              : "O won",
+      description: "New game restarting in 3 seconds...",
+      button1Text: "Quit",
+      button2Text: "Rate game",
+      barrierDismissible: false,
+      button1OnPressed: () {
+        navigation.goBack(_context);
+        navigation.changeScreenReplacement(
+          const HomeScreen(),
+          _widget,
+        );
+      },
+      button2OnPressed: () {
+        launchUrl(
+          Uri.parse(gameLinkAndroid),
+        );
+      },
+    );
+    await Future.delayed(const Duration(seconds: 3), () {
+      board = List.generate(generateRandomBoardSize(), (index) => 0);
+
+      result = Result(false, []);
+      turn = (winner == PlaySymbol.x ? PlaySymbol.o : PlaySymbol.x);
+
+      navigation.goBack(_context);
+      doStateChange = true;
+      design();
+
+      notifyListeners();
+    });
   }
 
   void aiMove(String chose) async {
@@ -112,8 +180,7 @@ class SingleModeProvider with ChangeNotifier {
       },
       button2OnPressed: () {
         launchUrl(
-          Uri.parse(
-              "https://play.google.com/store/apps/details?id=com.princeappstudio.tic_tac_toe"),
+          Uri.parse(gameLinkAndroid),
         );
       },
     );

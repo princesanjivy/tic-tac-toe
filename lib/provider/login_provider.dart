@@ -38,10 +38,13 @@ class LoginProvider with ChangeNotifier {
       userCredential =
       await FirebaseAuth.instance.signInWithCredential(credential);
 
-
+      Future.delayed(const Duration(milliseconds: 100));
       // add user to firestore database
-      FirebaseFirestore.instance.collection("users").add(
-          getUserData.toDbJson());
+      Player player = getUserData;
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(player.playerId)
+          .set(player.toDbJson());
     } finally {
       loading = false;
     }
@@ -81,7 +84,6 @@ class LoginProvider with ChangeNotifier {
         .where("playerId", isEqualTo: id)
         .get();
     Player player = Player.fromJson(data.docs.first.data());
-    print(player.name);
 
     return player;
   }

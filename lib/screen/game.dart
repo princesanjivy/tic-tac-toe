@@ -19,6 +19,7 @@ import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
+import 'package:vibration/vibration.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
@@ -243,6 +244,8 @@ class _GameScreenState extends State<GameScreen> {
                                             .players[
                                                 !widget.isRoomOwner ? 1 : 0]
                                             .chose) {
+                                  Vibration.vibrate(
+                                      duration: 80, amplitude: 120);
                                   FirebaseDatabase.instance
                                       .ref(
                                         "$roomPath${widget.roomData.code}/board/$index",

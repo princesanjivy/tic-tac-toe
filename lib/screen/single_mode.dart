@@ -12,10 +12,13 @@ import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/single_mode_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
+import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class SingleModeScreen extends StatefulWidget {
-  const SingleModeScreen({super.key});
+  const SingleModeScreen({super.key, required this.twoPlayerMode});
+
+  final bool twoPlayerMode;
 
   @override
   State<SingleModeScreen> createState() => SingleModeScreenState();
@@ -33,7 +36,7 @@ class SingleModeScreenState extends State<SingleModeScreen> {
 
   void initProvider() {
     Provider.of<SingleModeProvider>(context, listen: false)
-        .init(context, widget);
+        .init(context, widget, widget.twoPlayerMode);
   }
 
   @override
@@ -87,8 +90,11 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                       PlayAnimationOnWidget(
                         msDelay: 400,
                         child: PlayerCard(
-                          imageUrl: "assets/images/ai.png",
-                          name: "AI (${provider.aiChose})",
+                          imageUrl: widget.twoPlayerMode
+                              ? "assets/images/user.png"
+                              : "assets/images/ai.png",
+                          name:
+                              "${widget.twoPlayerMode ? "Player" : "AI"} (${provider.aiChose})",
                           isAsset: true,
                           showScore: true,
                           scoreValue: provider
@@ -130,18 +136,31 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                print(provider.board);
-                                print(provider.turn);
-                                print(provider.playerChose);
-                                if (provider.board[index] == 0 &&
-                                    provider.turn == provider.playerChose) {
-                                  provider.board[index] =
-                                      PlaySymbol.inNum(provider.turn);
-                                  provider.turn = (provider.turn == PlaySymbol.x
-                                      ? PlaySymbol.o
-                                      : PlaySymbol.x);
+                                Vibration.vibrate(duration: 80, amplitude: 120);
+                                if (widget.twoPlayerMode) {
+                                  if (provider.board[index] == 0) {
+                                    print(provider.board);
+                                    provider.board[index] =
+                                        PlaySymbol.inNum(provider.turn);
+                                    provider.turn =
+                                        (provider.turn == PlaySymbol.x
+                                            ? PlaySymbol.o
+                                            : PlaySymbol.x);
 
-                                  provider.aiMove(provider.turn);
+                                    provider.validate();
+                                  }
+                                } else {
+                                  if (provider.board[index] == 0 &&
+                                      provider.turn == provider.playerChose) {
+                                    provider.board[index] =
+                                        PlaySymbol.inNum(provider.turn);
+                                    provider.turn =
+                                        (provider.turn == PlaySymbol.x
+                                            ? PlaySymbol.o
+                                            : PlaySymbol.x);
+
+                                    provider.aiMove(provider.turn);
+                                  }
                                 }
                               },
                               child: Container(
@@ -200,7 +219,9 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                       child: Text(
                         (provider.turn == provider.playerChose)
                             ? "Your turn"
-                            : "AI turn",
+                            : widget.twoPlayerMode
+                                ? "Player turn"
+                                : "AI turn",
                         style: TextStyle(
                           fontSize: defaultTextSize,
                           color: themeProvider.bgColor,

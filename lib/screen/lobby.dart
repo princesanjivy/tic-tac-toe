@@ -109,12 +109,19 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                   onPressed: () {
                                     if (kIsWeb) {
                                       FlutterClipboard.copy(
-                                        "Tic Tac Toe Online room code is : ${widget.roomData.code}",
+                                        "Tic Tac Toe Online room code is : ${widget.roomData.code}, vist $gameLinkWeb and play.\n"
+                                        "Want to play in Android instead?, visit the link to download: $gameLinkAndroid.",
+                                      );
+
+                                      Fluttertoast.showToast(
+                                        msg: "Room code copied",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.CENTER,
                                       );
                                     } else {
                                       Share.share(
-                                        "Tic Tac Toe Online room code is : ${widget.roomData.code}",
-                                      );
+                                          "Tic Tac Toe Online room code is : ${widget.roomData.code}.\n"
+                                          "Don't have the game, visit the link to download: $gameLinkAndroid.");
                                     }
                                   },
                                   style: ButtonStyle(
@@ -269,8 +276,17 @@ class _LobbyScreenState extends State<LobbyScreen> {
                             : "Waiting...",
                         onPressed: () {
                           if (widget.isRoomOwner) {
-                            // gameProvider.designBoard(widget.roomData.board);
-                            roomProvider.isStarted(true, widget.roomData.code);
+                            if (widget.roomData.players[0].playerId ==
+                                widget.roomData.players[1].playerId) {
+                              Fluttertoast.showToast(
+                                msg: "Looks like you're play against yourself",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
+                              );
+                            } else {
+                              roomProvider.isStarted(
+                                  true, widget.roomData.code);
+                            }
                           } else {
                             Fluttertoast.showToast(
                               msg: "You can't start the game",
@@ -278,11 +294,6 @@ class _LobbyScreenState extends State<LobbyScreen> {
                               gravity: ToastGravity.CENTER,
                             );
                           }
-                          // Navigation.changeScreenReplacement(
-                          //   context,
-                          //   const GameScreen(),
-                          //   widget,
-                          // );
                         },
                         showLoading:
                             widget.roomData.players.length == 2 ? false : true,
