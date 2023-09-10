@@ -55,6 +55,7 @@ dependencies:
   flutter_svg: ^2.0.7
   clipboard: ^0.1.3
   url_launcher: ^6.1.14
+  google_mobile_ads: ^3.0.0
 
 dependency_overrides:
   http: ^1.0.0

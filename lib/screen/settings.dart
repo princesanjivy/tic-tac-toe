@@ -8,6 +8,8 @@ import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/helper/show_banner_ad.dart';
+import 'package:tic_tac_toe/helper/show_interstitial_ad.dart';
 import 'package:tic_tac_toe/provider/audio_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
@@ -24,6 +26,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late Navigation navigation;
+
+  BottomBannerAd ad = BottomBannerAd();
 
   @override
   void didChangeDependencies() {
@@ -193,6 +197,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   msDelay: 1400,
                   iconData: Icons.arrow_back_ios_new_rounded,
                   onPressed: () {
+                    FullScreenAd.object.show();
+
                     navigation.changeScreenReplacement(
                       const HomeScreen(),
                       widget,
@@ -201,6 +207,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 )
               ],
             ),
+            bottomNavigationBar: ad.showBanner(),
           ),
         );
       },

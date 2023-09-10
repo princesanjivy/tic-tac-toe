@@ -8,6 +8,7 @@ import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/helper/show_banner_ad.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/provider/single_mode_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
@@ -26,6 +27,7 @@ class SingleModeScreen extends StatefulWidget {
 
 class SingleModeScreenState extends State<SingleModeScreen> {
   late Navigation navigation;
+  BottomBannerAd ad = BottomBannerAd();
 
   @override
   void initState() {
@@ -136,7 +138,10 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                Vibration.vibrate(duration: 80, amplitude: 120);
+                                if (!kIsWeb) {
+                                  Vibration.vibrate(
+                                      duration: 80, amplitude: 120);
+                                }
                                 if (widget.twoPlayerMode) {
                                   if (provider.board[index] == 0) {
                                     print(provider.board);
@@ -244,6 +249,7 @@ class SingleModeScreenState extends State<SingleModeScreen> {
             )
           ],
         ),
+        bottomNavigationBar: ad.showBanner(),
       );
     });
   }

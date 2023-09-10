@@ -1,11 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/firebase_options.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
+import 'package:tic_tac_toe/helper/show_interstitial_ad.dart';
 import 'package:tic_tac_toe/provider/audio_provider.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
@@ -19,7 +22,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  if (!kIsWeb) {
+    MobileAds.instance.initialize();
+    MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(
+        testDeviceIds: ["44C21CA2B517E5E19D6F9D510C330CA2"],
+      ),
+    );
+  }
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.manual,
     overlays: [],
@@ -28,8 +38,9 @@ void main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.white),
   );
 
-  AudioController audioController =
-      AudioController(); // create empty object to call init()
+  // create empty object to call init()
+  AudioController audioController = AudioController();
+  FullScreenAd object = FullScreenAd();
 
   runApp(
     MultiProvider(

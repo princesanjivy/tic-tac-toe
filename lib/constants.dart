@@ -29,3 +29,9 @@ List<BoxShadow> shadow = [
     // blurStyle: BlurStyle.outer,
   ),
 ];
+
+/// Test Ad ids
+const String bannerId1 = "ca-app-pub-3940256099942544/6300978111";
+const String bannerId2 = "ca-app-pub-3940256099942544/6300978111";
+const String interstitialId1 = "ca-app-pub-3940256099942544/1033173712";
+const String interstitialId2 = "ca-app-pub-3940256099942544/1033173712";

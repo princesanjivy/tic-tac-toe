@@ -11,6 +11,7 @@ import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/helper/show_banner_ad.dart';
 import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
@@ -30,30 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final AudioPlayer buttonClickPlayer = AudioPlayer();
 
   late Navigation navigation;
+  BottomBannerAd ad = BottomBannerAd();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     navigation = Navigation(Navigator.of(context));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    // player.stop();
-    // player.setVolume(0.055);
-    // player.setReleaseMode(ReleaseMode.loop);
-    // player.play(AssetSource("audio/bg_music.mp3"));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    // player.stop();
-    // player.dispose();
   }
 
   @override
@@ -191,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
+            bottomNavigationBar: ad.showBanner(),
           ),
         );
       },

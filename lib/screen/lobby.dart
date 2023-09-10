@@ -13,6 +13,7 @@ import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/helper/show_banner_ad.dart';
 import 'package:tic_tac_toe/model/player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
@@ -38,6 +39,8 @@ class LobbyScreen extends StatefulWidget {
 class _LobbyScreenState extends State<LobbyScreen> {
   late Navigation navigation;
   late RoomProvider roomProvider;
+
+  BottomBannerAd ad = BottomBannerAd();
 
   @override
   void didChangeDependencies() {
@@ -328,6 +331,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                   iconData: Icons.arrow_back_ios_new_rounded),
             ],
           ),
+          bottomNavigationBar: ad.showBanner(),
         );
       },
     );

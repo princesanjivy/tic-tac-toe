@@ -6,6 +6,7 @@ import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/helper/random_gen.dart';
+import 'package:tic_tac_toe/helper/show_interstitial_ad.dart';
 import 'package:tic_tac_toe/model/symbol.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -81,13 +82,15 @@ class SingleModeProvider with ChangeNotifier {
       title: winner == PlaySymbol.draw
           ? "Game draw"
           : winner == PlaySymbol.x
-              ? "X won"
-              : "O won",
+          ? "X won"
+          : "O won",
       description: "New game restarting in 3 seconds...",
       button1Text: "Quit",
       button2Text: "Rate game",
       barrierDismissible: false,
       button1OnPressed: () {
+        FullScreenAd.object.show();
+
         navigation.goBack(_context);
         navigation.changeScreenReplacement(
           const HomeScreen(),
@@ -120,7 +123,7 @@ class SingleModeProvider with ChangeNotifier {
 
     await Future.delayed(const Duration(milliseconds: 600), () {
       int index =
-          findBestMove(board, PlaySymbol.inNum(chose), getBoardSize(board));
+      findBestMove(board, PlaySymbol.inNum(chose), getBoardSize(board));
       bool skipCheck = false;
       {
         if (index == -1) {
@@ -172,6 +175,8 @@ class SingleModeProvider with ChangeNotifier {
       button2Text: "Rate game",
       barrierDismissible: false,
       button1OnPressed: () {
+        FullScreenAd.object.show();
+
         navigation.goBack(_context);
         navigation.changeScreenReplacement(
           const HomeScreen(),
