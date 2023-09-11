@@ -36,7 +36,6 @@ class GameProvider with ChangeNotifier {
           board = List.generate(generateRandomBoardSize(), (index) => 0);
 
           FirebaseDatabase.instance.ref(refPath).update({
-            // "board": [0, 0, 0, 0, 0, 0, 0, 0, 0],
             "board": board,
             "round": roomData.round + 1,
           });
