@@ -1,7 +1,7 @@
 name: tic_tac_toe
 description: Play offline, with friends, or online worldwide. Customize boards & themes.
 
-version: 1.0.2+3
+version: 1.0.3+4
 
 environment:
   sdk: '>=3.1.0-149.0.dev <4.0.0'
