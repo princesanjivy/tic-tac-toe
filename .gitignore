@@ -43,9 +43,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-/lib/firebase_options.dart
-/android/app/google-services.json
-
 pubspec.lock
 
 /web/index.html

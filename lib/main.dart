@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -6,22 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:tic_tac_toe/firebase_options.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/helper/show_interstitial_ad.dart';
 import 'package:tic_tac_toe/provider/audio_provider.dart';
-import 'package:tic_tac_toe/provider/game_provider.dart';
-import 'package:tic_tac_toe/provider/login_provider.dart';
-import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/single_mode_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
   if (!kIsWeb) {
     MobileAds.instance.initialize();
     MobileAds.instance.updateRequestConfiguration(
@@ -45,15 +38,6 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => LoginProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => RoomProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => GameProvider(),
-        ),
         ChangeNotifierProvider(
           create: (context) => ThemeProvider.init(),
         ),

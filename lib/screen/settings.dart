@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/icon_button.dart';
@@ -11,7 +10,6 @@ import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/helper/show_banner_ad.dart';
 import 'package:tic_tac_toe/helper/show_interstitial_ad.dart';
 import 'package:tic_tac_toe/provider/audio_provider.dart';
-import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -167,25 +165,6 @@ class _SettingsPageState extends State<SettingsPage> {
                               button2OnPressed: () {
                                 Navigator.pop(context);
                               },
-                            );
-                          },
-                        ),
-                        const VerticalSpacer(56),
-                        MyButton(
-                          text: "Logout",
-                          msDelay: 1400,
-                          doStateChange: true,
-                          onPressed: () {
-                            LoginProvider loginProvider =
-                                Provider.of<LoginProvider>(context,
-                                    listen: false);
-
-                            loginProvider.logout();
-
-                            Fluttertoast.showToast(
-                              msg: "Logged out successfully",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.CENTER,
                             );
                           },
                         ),

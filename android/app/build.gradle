@@ -1,8 +1,5 @@
 plugins {
     id "com.android.application"
-    // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
-    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -62,17 +59,12 @@ android {
         }
     }
 
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
-
     flavorDimensions "deploy"
 
     productFlavors {
         fdroid {
             dimension "deploy"
+            signingConfig signingConfigs.release
         }
     }
 

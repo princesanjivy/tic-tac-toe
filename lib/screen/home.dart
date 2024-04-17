@@ -1,5 +1,4 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,9 +11,7 @@ import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/helper/show_banner_ad.dart';
-import 'package:tic_tac_toe/provider/login_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
-import 'package:tic_tac_toe/screen/room.dart';
 import 'package:tic_tac_toe/screen/settings.dart';
 import 'package:tic_tac_toe/screen/single_mode.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -126,37 +123,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: "Single",
                           ),
                           const VerticalSpacer(16),
-                          Consumer<LoginProvider>(
-                            builder: (context, loginProvider, _) {
-                              return MyButton(
-                                doStateChange: true,
-                                msDelay: 1200,
-                                onPressed: () async {
-                                  User? user =
-                                      FirebaseAuth.instance.currentUser;
-                                  if (user != null) {
-                                    print("user is available");
-                                    navigation.changeScreenReplacement(
-                                      const RoomScreen(),
-                                      widget,
-                                    );
-                                  } else {
-                                    print("sign in");
-                                    UserCredential userCred =
-                                        await loginProvider.loginWithGoogle();
-
-                                    Fluttertoast.showToast(
-                                      msg:
-                                          "Welcome ${userCred.user!.displayName!}",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.CENTER,
-                                    );
-                                  }
-                                },
-                                text: "Online",
-                                showLoading: loginProvider.loading,
+                          MyButton(
+                            doStateChange: true,
+                            msDelay: 1200,
+                            onPressed: () {
+                              // TODO
+                              Fluttertoast.showToast(
+                                msg:
+                                    "Please use the app from Google Play Store!",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
                               );
                             },
+                            text: "Online",
                           ),
                         ],
                       ),
