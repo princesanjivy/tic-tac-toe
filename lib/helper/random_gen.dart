@@ -2,13 +2,6 @@ import 'dart:math';
 
 import 'package:tic_tac_toe/model/symbol.dart';
 
-int generateRandomRoomCode() {
-  Random random = Random();
-  int min = 100000; // Minimum 6-digit number
-  int max = 999999; // Maximum 6-digit number
-  return min + random.nextInt(max - min);
-}
-
 int generateRandomBoardSize() {
   Random random = Random();
   int min = 3;

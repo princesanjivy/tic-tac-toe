@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
@@ -10,10 +9,10 @@ import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
-import 'package:tic_tac_toe/helper/show_banner_ad.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/settings.dart';
 import 'package:tic_tac_toe/screen/single_mode.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final AudioPlayer buttonClickPlayer = AudioPlayer();
 
   late Navigation navigation;
-  BottomBannerAd ad = BottomBannerAd();
 
   @override
   void didChangeDependencies() {
@@ -127,12 +125,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             doStateChange: true,
                             msDelay: 1200,
                             onPressed: () {
-                              // TODO
-                              Fluttertoast.showToast(
-                                msg:
-                                    "Please use the app from Google Play Store!",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.CENTER,
+                              PopUp.show(
+                                context,
+                                title: "Info",
+                                description:
+                                    "To play the game Online with other players, please download the same app from PlayStore."
+                                    "\n\nThe source code of the online-mode version can be found under the `master` of TicTacToe repo on Github.",
+                                button1Text: "Visit PlayStore",
+                                button2Text: "Close",
+                                barrierDismissible: false,
+                                button1OnPressed: () async {
+                                  launchUrl(Uri.parse(gameLinkAndroid));
+                                },
+                                button2OnPressed: () {
+                                  Navigator.pop(context);
+                                },
                               );
                             },
                             text: "Online",
@@ -154,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
-            bottomNavigationBar: ad.showBanner(),
           ),
         );
       },

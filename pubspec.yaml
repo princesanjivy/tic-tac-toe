@@ -1,5 +1,5 @@
 name: tic_tac_toe
-description: Play offline, with friends, or online worldwide. Customize boards & themes.
+description: Play offline, with friends. Customize boards & themes.
 
 version: 1.0.3+4
 
@@ -25,7 +25,6 @@ dependencies:
   flutter_svg: ^2.0.7
   clipboard: ^0.1.3
   url_launcher: ^6.1.14
-  google_mobile_ads: ^3.0.0
 
 dependency_overrides:
   http: ^1.0.0

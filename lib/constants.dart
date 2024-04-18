@@ -16,10 +16,8 @@ int msAnimationDelay = 150;
 
 String imageUrl =
     "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80";
-String roomPath = "/room/";
 String gameLinkAndroid =
-        "https://play.google.com/store/apps/details?id=com.princeappstudio.tic_tac_toe",
-    gameLinkWeb = "https://tictactoe.princeappstudio.in";
+    "https://play.google.com/store/apps/details?id=com.princeappstudio.tic_tac_toe";
 
 List<BoxShadow> shadow = [
   BoxShadow(
@@ -29,9 +27,3 @@ List<BoxShadow> shadow = [
     // blurStyle: BlurStyle.outer,
   ),
 ];
-
-/// Test Ad ids
-const String bannerId1 = "ca-app-pub-3940256099942544/6300978111";
-const String bannerId2 = "ca-app-pub-3940256099942544/6300978111";
-const String interstitialId1 = "ca-app-pub-3940256099942544/1033173712";
-const String interstitialId2 = "ca-app-pub-3940256099942544/1033173712";
