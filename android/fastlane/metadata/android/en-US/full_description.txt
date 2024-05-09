@@ -1,0 +1,5 @@
+Tic Tac Toe - Online is the ultimate game of strategy and fun! Play offline against a challenging AI, compete with a friend on the same device, or challenge players worldwide in online mode. Customize your game with 3, 4, or 5-sized boards, switch between dark and light themes, and enjoy a minimalist design with elegant UIs. Our game is open source, and you can view the game's source code in the in-app settings page. The game is designed with a minimalist approach, featuring elegant and user-friendly interfaces. Enjoy smooth and immersive transition animations for every element of the game, making your gaming experience visually pleasing.
+
+Tic Tac Toe - Online is built on the Flutter framework, which ensures a smooth and responsive user experience. Firebase powers the online multiplayer functionality, providing a reliable and secure environment.
+
+Download now!
