@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/provider/audio_provider.dart';
@@ -54,12 +53,7 @@ class _MyAppState extends State<MyApp> {
       title: "Tic Tac Toe",
       theme: ThemeData(
         useMaterial3: false,
-        textTheme: GoogleFonts.judsonTextTheme().copyWith(
-            // bodyMedium: GoogleFonts.judson(
-            //   color: secondaryColor,
-            //   fontSize: defaultTextSize,
-            // ),
-            ),
+        fontFamily: "Judson",
         colorScheme: ColorScheme.fromSeed(
           seedColor:
               Provider.of<ThemeProvider>(context, listen: true).primaryColor,

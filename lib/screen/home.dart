@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
 import 'package:tic_tac_toe/components/icon_button.dart';
@@ -53,19 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Text(
-                      //   "Tic Tac Toe",
-                      //   style: GoogleFonts.hennyPenny(
-                      //     fontSize: 58,
-                      //     color: themeProvider.primaryColor,
-                      //   ),
-                      // ),
                       TextAnimator(
                         "Tic Tac Toe",
-                        style: GoogleFonts.hennyPenny(
-                          fontSize: 58,
-                          color: themeProvider.primaryColor,
-                        ),
+                        style: TextStyle(
+                            fontSize: 58,
+                            color: themeProvider.primaryColor,
+                            fontFamily: "HennyPenny"),
                         // characterDelay: const Duration(milliseconds: 100),
                         incomingEffect:
                             WidgetTransitionEffects.incomingSlideInFromBottom(),

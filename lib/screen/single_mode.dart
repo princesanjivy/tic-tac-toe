@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
@@ -80,10 +79,10 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                         msDelay: 1200,
                         child: Text(
                           "Round\n${provider.round}",
-                          style: GoogleFonts.hennyPenny(
-                            fontSize: defaultTextSize - 2,
-                            color: themeProvider.primaryColor,
-                          ),
+                          style: TextStyle(
+                              fontSize: defaultTextSize - 2,
+                              color: themeProvider.primaryColor,
+                              fontFamily: "HennyPenny"),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -188,13 +187,13 @@ class SingleModeScreenState extends State<SingleModeScreen> {
                                                 PlaySymbol.oInt
                                             ? PlaySymbol.o
                                             : "",
-                                    style: GoogleFonts.hennyPenny(
-                                      fontSize: 42 - 8,
-                                      color: provider.result.positions
-                                              .contains(index)
-                                          ? themeProvider.bgColor
-                                          : themeProvider.primaryColor,
-                                    ),
+                                    style: TextStyle(
+                                        fontSize: 42 - 8,
+                                        color: provider.result.positions
+                                                .contains(index)
+                                            ? themeProvider.bgColor
+                                            : themeProvider.primaryColor,
+                                        fontFamily: "HennyPenny"),
                                   ),
                                 ),
                               ),
