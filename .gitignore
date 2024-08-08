@@ -49,7 +49,14 @@ app.*.map.json
 pubspec.lock
 
 /web/index.html
+/web/sw.js
 
 # functions venv
 /functions/venv/
 /cloud-functions-js/
+
+.firebase
+firebase.json
+.firebaserc
+
+android/flutter-tic-tac-toe-1f1db-7d46c91ea2c7.json
