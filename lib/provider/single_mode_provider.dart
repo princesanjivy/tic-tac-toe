@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
@@ -99,7 +100,7 @@ class SingleModeProvider with ChangeNotifier {
       },
       button2OnPressed: () {
         launchUrl(
-          Uri.parse(gameLinkAndroid),
+          Uri.parse(Platform.isIOS ? gameLinkIos: gameLinkAndroid),
         );
       },
     );
@@ -185,7 +186,7 @@ class SingleModeProvider with ChangeNotifier {
       },
       button2OnPressed: () {
         launchUrl(
-          Uri.parse(gameLinkAndroid),
+          Uri.parse(Platform.isIOS ? gameLinkIos: gameLinkAndroid),
         );
       },
     );

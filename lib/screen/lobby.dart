@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +114,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                     if (kIsWeb) {
                                       FlutterClipboard.copy(
                                         "Tic Tac Toe Online room code is : ${widget.roomData.code}, vist $gameLinkWeb and play.\n"
-                                        "Want to play in Android instead?, visit the link to download: $gameLinkAndroid.",
+                                        "Want to play in Android instead?, visit the link to download: ${Platform.isIOS ? gameLinkIos: gameLinkAndroid}.",
                                       );
 
                                       Fluttertoast.showToast(
@@ -124,7 +125,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
                                     } else {
                                       Share.share(
                                           "Tic Tac Toe Online room code is : ${widget.roomData.code}.\n"
-                                          "Don't have the game, visit the link to download: $gameLinkAndroid.");
+                                          "Don't have the game, visit the link to download: ${Platform.isIOS ? gameLinkIos: gameLinkAndroid}.");
                                     }
                                   },
                                   style: ButtonStyle(

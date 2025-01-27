@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -141,16 +142,48 @@ class _HomeScreenState extends State<HomeScreen> {
                                       widget,
                                     );
                                   } else {
-                                    print("sign in");
-                                    UserCredential userCred =
-                                        await loginProvider.loginWithGoogle();
+                                    if (Platform.isIOS) {
+                                      PopUp.show(
+                                        context,
+                                        title: "Online Mode",
+                                        description:
+                                            "SignIn to play in Online mode",
+                                        button1Text: "Sign in with Apple",
+                                        button2Text: "Cancel",
+                                        barrierDismissible: true,
+                                        button1OnPressed: () async {
+                                          print("sign in using appleId");
+                                          await loginProvider.loginWithApple();
 
-                                    Fluttertoast.showToast(
-                                      msg:
-                                          "Welcome ${userCred.user!.displayName!}",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.CENTER,
-                                    );
+                                          Fluttertoast.showToast(
+                                            msg: "Welcome",
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.CENTER,
+                                          );
+                                          Navigator.pop(context);
+                                          // Continue to next screen
+                                          print("user is available");
+                                          navigation.changeScreenReplacement(
+                                            const RoomScreen(),
+                                            widget,
+                                          );
+                                        },
+                                        button2OnPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    } else {
+                                      print("sign in");
+                                      UserCredential userCred =
+                                          await loginProvider.loginWithGoogle();
+
+                                      Fluttertoast.showToast(
+                                        msg:
+                                            "Welcome ${userCred.user!.displayName!}",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.CENTER,
+                                      );
+                                    }
                                   }
                                 },
                                 text: "Online",

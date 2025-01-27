@@ -1,5 +1,5 @@
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
+// import 'dart:html';
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -35,39 +35,39 @@ class BottomBannerAd {
     _bannerAd.load();
   }
 
-  Widget bannerForWeb() {
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-        "bannerAd",
-        (int viewID) => IFrameElement()
-          ..width = "468"
-          ..height = "60"
-          ..src = "adsterra_banner_ad.html"
-          ..style.border = "none");
+  // Widget bannerForWeb() {
+  //   // ignore: undefined_prefixed_name
+  //   ui.platformViewRegistry.registerViewFactory(
+  //       "bannerAd",
+  //       (int viewID) => IFrameElement()
+  //         ..width = "468"
+  //         ..height = "60"
+  //         ..src = "adsterra_banner_ad.html"
+  //         ..style.border = "none");
 
-    return const SizedBox(
-      height: 60,
-      width: 468,
-      child: HtmlElementView(
-        viewType: "bannerAd",
-      ),
-    );
-  }
+  //   return const SizedBox(
+  //     height: 60,
+  //     width: 468,
+  //     child: HtmlElementView(
+  //       viewType: "bannerAd",
+  //     ),
+  //   );
+  // }
 
   Widget showBanner() {
     return kIsWeb
-        // ? Container(
-        //     alignment: Alignment.center,
-        //     padding: EdgeInsets.all(2),
-        //     height: 26,
-        //     child: const Text(
-        //       "Copyright © princeappstudio.in",
-        //       style: TextStyle(
-        //         color: Colors.cyan,
-        //       ),
-        //     ),
-        //   )
-        ? bannerForWeb()
+        ? Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(2),
+            height: 26,
+            child: const Text(
+              "Copyright © princeappstudio.in",
+              style: TextStyle(
+                color: Colors.cyan,
+              ),
+            ),
+          )
+        // ? bannerForWeb()
         : Container(
             alignment: Alignment.center,
             width: _bannerAd.size.width.toDouble(),

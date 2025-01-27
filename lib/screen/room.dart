@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -356,7 +357,7 @@ class _GameScreenControllerState extends State<GameScreenController> {
                     },
                     button1OnPressed: () {
                       launchUrl(
-                        Uri.parse(gameLinkAndroid),
+                        Uri.parse(Platform.isIOS ? gameLinkIos: gameLinkAndroid),
                       );
                     },
                   );

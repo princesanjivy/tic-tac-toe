@@ -20,6 +20,7 @@ String roomPath = "/room/";
 String gameLinkAndroid =
         "https://play.google.com/store/apps/details?id=com.princeappstudio.tic_tac_toe",
     gameLinkWeb = "https://tictactoe.princeappstudio.in";
+String gameLinkIos = "https://apps.apple.com/us/app/tic-tac-toe-online-2player/id6740833110";
 
 List<BoxShadow> shadow = [
   BoxShadow(

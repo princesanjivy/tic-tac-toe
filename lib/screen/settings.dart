@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -38,8 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, AudioProvider>(
-      builder: (context, themeProvider, audioProvider, _) {
+    return Consumer3<ThemeProvider, AudioProvider, LoginProvider>(
+      builder: (context, themeProvider, audioProvider, loginProvider, _) {
         return WillPopScope(
           onWillPop: () async {
             return false;
@@ -134,15 +135,21 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         const VerticalSpacer(16),
                         MyButton(
-                          text: "More apps on PlayStore",
+                          text: Platform.isIOS
+                              ? "More on App Store"
+                              : "More on PlayStore",
                           msDelay: 1000,
                           doStateChange: true,
                           onPressed: () {
-                            print("ok");
-                            launchUrl(
-                              Uri.parse(
-                                  "https://play.google.com/store/apps/dev?id=6439925551269057866"),
-                            );
+                            String url = "";
+                            if (Platform.isIOS) {
+                              url =
+                                  "https://apps.apple.com/us/developer/sanjivy-kumaravel/id1741498828";
+                            } else {
+                              url =
+                                  "https://play.google.com/store/apps/dev?id=6439925551269057866";
+                            }
+                            launchUrl(Uri.parse(url));
                           },
                         ),
                         const VerticalSpacer(26),
@@ -171,24 +178,36 @@ class _SettingsPageState extends State<SettingsPage> {
                           },
                         ),
                         const VerticalSpacer(56),
-                        MyButton(
-                          text: "Logout",
-                          msDelay: 1400,
-                          doStateChange: true,
-                          onPressed: () {
-                            LoginProvider loginProvider =
-                                Provider.of<LoginProvider>(context,
-                                    listen: false);
+                        loginProvider.isLoggedIn
+                            ? AnimationOnWidget(
+                                msDelay: 1400,
+                                doStateChange: true,
+                                child: Text(
+                                  "Logged in as: ${loginProvider.getUserData.name}",
+                                  style: TextStyle(
+                                    fontSize: defaultTextSize + 2,
+                                    color: themeProvider.secondaryColor,
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        const VerticalSpacer(4),
+                        loginProvider.isLoggedIn
+                            ? MyButton(
+                                text: "Logout",
+                                msDelay: 1400,
+                                doStateChange: true,
+                                onPressed: () {
+                                  loginProvider.logout();
 
-                            loginProvider.logout();
-
-                            Fluttertoast.showToast(
-                              msg: "Logged out successfully",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.CENTER,
-                            );
-                          },
-                        ),
+                                  Fluttertoast.showToast(
+                                    msg: "Logged out successfully",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.CENTER,
+                                  );
+                                },
+                              )
+                            : Container(),
                       ],
                     ),
                   ),

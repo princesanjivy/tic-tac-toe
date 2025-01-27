@@ -19,7 +19,7 @@ class AudioController {
   }
 
   void init() async {
-    source = AssetSource("audio/click2.ogg");
+    source = AssetSource("audio/click2.mp3");
   }
 
   void buttonClick(BuildContext context) async {
