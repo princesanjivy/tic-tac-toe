@@ -11,7 +11,6 @@ import 'package:tic_tac_toe/helper/navigation.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/screen/settings.dart';
 import 'package:tic_tac_toe/screen/single_mode.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -55,9 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextAnimator(
                         "Tic Tac Toe",
                         style: TextStyle(
-                            fontSize: 58,
-                            color: themeProvider.primaryColor,
-                            fontFamily: "HennyPenny"),
+                          fontSize: 58,
+                          color: themeProvider.primaryColor,
+                          fontFamily: "HennyPenny",
+                        ),
                         // characterDelay: const Duration(milliseconds: 100),
                         incomingEffect:
                             WidgetTransitionEffects.incomingSlideInFromBottom(),
@@ -102,37 +102,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 button2OnPressed: () {
                                   navigation.changeScreenReplacement(
-                                    const SingleModeScreen(
-                                      twoPlayerMode: true,
-                                    ),
+                                    const SingleModeScreen(twoPlayerMode: true),
                                     widget,
                                   );
                                 },
                               );
                             },
-                            text: "Single",
+                            text: "Play Now",
                           ),
                           const VerticalSpacer(16),
                           MyButton(
                             doStateChange: true,
                             msDelay: 1200,
                             onPressed: () {
-                              PopUp.show(
-                                context,
-                                title: "Info",
-                                description:
-                                    "To play the game Online with other players, please download the same app from PlayStore."
-                                    "\n\nThe source code of the online-mode version can be found under the `master` of TicTacToe repo on Github.",
-                                button1Text: "Visit PlayStore",
-                                button2Text: "Close",
-                                barrierDismissible: false,
-                                button1OnPressed: () async {
-                                  launchUrl(Uri.parse(gameLinkAndroid));
-                                },
-                                button2OnPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              );
+                              // PopUp.show(
+                              //   context,
+                              //   title: "Info",
+                              //   description:
+                              //       "To play the game Online with other players, please download the same app from PlayStore."
+                              //       "\n\nWe are working on an update to make it work within the GameIt application.",
+                              //   button1Text: "Visit PlayStore",
+                              //   button2Text: "Close",
+                              //   barrierDismissible: false,
+                              //   button1OnPressed: () async {
+                              //     launchUrl(Uri.parse(gameLinkAndroid));
+                              //   },
+                              //   button2OnPressed: () {
+                              //     Navigator.pop(context);
+                              //   },
+                              // );
                             },
                             text: "Online",
                           ),
@@ -150,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       widget,
                     );
                   },
-                )
+                ),
               ],
             ),
           ),

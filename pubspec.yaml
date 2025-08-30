@@ -4,14 +4,14 @@ description: Play offline, with friends. Customize boards & themes.
 version: 1.0.3+4
 
 environment:
-  sdk: '>=3.1.0-149.0.dev <4.0.0'
+  sdk: ^3.8.1
 
 dependencies:
   flutter:
     sdk: flutter
 
   audioplayers: ^4.1.0
-  provider: ^6.0.5
+  provider: ^6.1.5+1
   widget_and_text_animator:
     git:
       url: https://github.com/princesanjivy/widget_and_text_animator.git

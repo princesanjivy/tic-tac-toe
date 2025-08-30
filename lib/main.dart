@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,10 +11,7 @@ import 'package:tic_tac_toe/screen/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.manual,
-    overlays: [],
-  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.white),
   );
@@ -24,15 +22,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider.init(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => AudioProvider.init(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => SingleModeProvider(),
-        ),
+        ChangeNotifierProvider(create: (context) => ThemeProvider.init()),
+        ChangeNotifierProvider(create: (context) => AudioProvider.init()),
+        ChangeNotifierProvider(create: (context) => SingleModeProvider()),
       ],
       child: const MyApp(),
     ),
@@ -50,13 +42,18 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) {
+        return FixedWidthScaffold(child: child!);
+      },
       title: "Tic Tac Toe",
       theme: ThemeData(
         useMaterial3: false,
         fontFamily: "Judson",
         colorScheme: ColorScheme.fromSeed(
-          seedColor:
-              Provider.of<ThemeProvider>(context, listen: true).primaryColor,
+          seedColor: Provider.of<ThemeProvider>(
+            context,
+            listen: true,
+          ).primaryColor,
         ),
       ),
       scrollBehavior: NoThumbScrollBehavior().copyWith(scrollbars: false),
@@ -84,10 +81,7 @@ class ScreenController extends StatelessWidget {
                       // ),
                       Text(
                         "princeappstudio\npresents",
-                        style: TextStyle(
-                          color: Colors.cyan,
-                          fontSize: 22,
-                        ),
+                        style: TextStyle(color: Colors.cyan, fontSize: 22),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -103,8 +97,38 @@ class ScreenController extends StatelessWidget {
 class NoThumbScrollBehavior extends ScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.stylus,
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.stylus,
+  };
+}
+
+// Fixed With Scaffold
+class FixedWidthScaffold extends StatelessWidget {
+  final Widget child;
+  static const double targetWidth = 430;
+
+  const FixedWidthScaffold({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = constraints.maxWidth / targetWidth;
+
+        return defaultTargetPlatform == TargetPlatform.android
+            ? child
+            : Container(
+                color: Colors.black,
+                child: Center(
+                  child: Transform.scale(
+                    scale: scale.clamp(0.1, 1.0),
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(width: targetWidth, child: child),
+                  ),
+                ),
+              );
+      },
+    );
+  }
 }
