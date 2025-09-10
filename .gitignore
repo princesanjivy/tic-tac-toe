@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -43,10 +45,25 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# pubspec.lock
+/lib/firebase_options.dart
+/android/app/google-services.json
+
+pubspec.lock
 
 /web/index.html
+/web/sw.js
 
 # functions venv
 /functions/venv/
 /cloud-functions-js/
+
+.firebase
+firebase.json
+.firebaserc
+
+android/flutter-tic-tac-toe-1f1db-7d46c91ea2c7.json
+
+web/adsterra_banner_ad.html
+
+# ios 
+/ios/Runner/GoogleService-info.plist

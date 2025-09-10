@@ -54,9 +54,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           useIncomingEffect: true,
                           incomingEffect:
                               WidgetTransitionEffects.incomingSlideInFromTop(
-                            delay: const Duration(milliseconds: 400),
-                            curve: Curves.fastOutSlowIn,
-                          ),
+                                delay: const Duration(milliseconds: 400),
+                                curve: Curves.fastOutSlowIn,
+                              ),
                           doStateChange: true,
                           child: Text(
                             "Settings",
@@ -84,11 +84,11 @@ class _SettingsPageState extends State<SettingsPage> {
                               const HorizontalSpacer(8),
                               Switch(
                                 activeColor: themeProvider.primaryColor,
-                                activeTrackColor:
-                                    themeProvider.primaryColor.withOpacity(0.5),
+                                activeTrackColor: themeProvider.primaryColor
+                                    .withOpacity(0.5),
                                 inactiveThumbColor: themeProvider.primaryColor,
-                                inactiveTrackColor:
-                                    themeProvider.primaryColor.withOpacity(0.5),
+                                inactiveTrackColor: themeProvider.primaryColor
+                                    .withOpacity(0.5),
                                 value: !audioProvider.canPlayAudio,
                                 onChanged: (value) {
                                   audioProvider.setPlayAudio();
@@ -113,11 +113,11 @@ class _SettingsPageState extends State<SettingsPage> {
                               const HorizontalSpacer(8),
                               Switch(
                                 activeColor: themeProvider.primaryColor,
-                                activeTrackColor:
-                                    themeProvider.primaryColor.withOpacity(0.5),
+                                activeTrackColor: themeProvider.primaryColor
+                                    .withOpacity(0.5),
                                 inactiveThumbColor: themeProvider.primaryColor,
-                                inactiveTrackColor:
-                                    themeProvider.primaryColor.withOpacity(0.5),
+                                inactiveTrackColor: themeProvider.primaryColor
+                                    .withOpacity(0.5),
                                 value: !themeProvider.isLightTheme,
                                 onChanged: (value) {
                                   themeProvider.changeTheme();
@@ -135,7 +135,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             print("ok");
                             launchUrl(
                               Uri.parse(
-                                  "https://play.google.com/store/apps/dev?id=6439925551269057866"),
+                                "https://play.google.com/store/apps/dev?id=6439925551269057866",
+                              ),
                             );
                           },
                         ),
@@ -155,8 +156,9 @@ class _SettingsPageState extends State<SettingsPage> {
                               button2Text: "Close",
                               barrierDismissible: false,
                               button1OnPressed: () async {
-                                launchUrl(Uri.parse(
-                                    "https://linktr.ee/princesanjivy"));
+                                launchUrl(
+                                  Uri.parse("https://linktr.ee/princesanjivy"),
+                                );
                               },
                               button2OnPressed: () {
                                 Navigator.pop(context);
@@ -177,7 +179,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       widget,
                     );
                   },
-                )
+                ),
               ],
             ),
           ),

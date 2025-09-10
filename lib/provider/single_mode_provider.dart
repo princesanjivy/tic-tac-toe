@@ -81,23 +81,18 @@ class SingleModeProvider with ChangeNotifier {
       title: winner == PlaySymbol.draw
           ? "Game draw"
           : winner == PlaySymbol.x
-              ? "X won"
-              : "O won",
+          ? "X won"
+          : "O won",
       description: "New game restarting in 3 seconds...",
       button1Text: "Quit",
       button2Text: "Rate game",
       barrierDismissible: false,
       button1OnPressed: () {
         navigation.goBack(_context);
-        navigation.changeScreenReplacement(
-          const HomeScreen(),
-          _widget,
-        );
+        navigation.changeScreenReplacement(const HomeScreen(), _widget);
       },
       button2OnPressed: () {
-        launchUrl(
-          Uri.parse(gameLinkAndroid),
-        );
+        launchUrl(Uri.parse(gameLinkAndroid));
       },
     );
     await Future.delayed(const Duration(seconds: 3), () {
@@ -119,8 +114,11 @@ class SingleModeProvider with ChangeNotifier {
     notifyListeners();
 
     await Future.delayed(const Duration(milliseconds: 600), () {
-      int index =
-          findBestMove(board, PlaySymbol.inNum(chose), getBoardSize(board));
+      int index = findBestMove(
+        board,
+        PlaySymbol.inNum(chose),
+        getBoardSize(board),
+      );
       bool skipCheck = false;
       {
         if (index == -1) {
@@ -173,15 +171,10 @@ class SingleModeProvider with ChangeNotifier {
       barrierDismissible: false,
       button1OnPressed: () {
         navigation.goBack(_context);
-        navigation.changeScreenReplacement(
-          const HomeScreen(),
-          _widget,
-        );
+        navigation.changeScreenReplacement(const HomeScreen(), _widget);
       },
       button2OnPressed: () {
-        launchUrl(
-          Uri.parse(gameLinkAndroid),
-        );
+        launchUrl(Uri.parse(gameLinkAndroid));
       },
     );
     await Future.delayed(const Duration(seconds: 5), () {

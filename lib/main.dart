@@ -5,8 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/provider/audio_provider.dart';
+import 'package:tic_tac_toe/provider/auth_provider.dart';
+import 'package:tic_tac_toe/provider/game_provider.dart';
+import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/single_mode_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
+import 'package:tic_tac_toe/provider/tictacit_provider.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 
 void main() async {
@@ -22,6 +26,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => TicTacItProvider()),
+        ChangeNotifierProvider(create: (context) => GameAuthProvider()),
+        ChangeNotifierProvider(create: (context) => RoomProvider()),
+        ChangeNotifierProvider(create: (context) => GameProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider.init()),
         ChangeNotifierProvider(create: (context) => AudioProvider.init()),
         ChangeNotifierProvider(create: (context) => SingleModeProvider()),
@@ -67,30 +75,38 @@ class ScreenController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, theme, _) {
-        return theme.showLoading
-            ? const Scaffold(
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Center(
-                      //   child: CircularProgressIndicator(),
-                      // ),
-                      Text(
-                        "princeappstudio\npresents",
-                        style: TextStyle(color: Colors.cyan, fontSize: 22),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+    if (!context.watch<TicTacItProvider>().isAccessChecked) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (context.read<TicTacItProvider>().isValid) {
+      return Consumer<ThemeProvider>(
+        builder: (context, theme, _) {
+          return theme.showLoading
+              ? const Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Center(
+                        //   child: CircularProgressIndicator(),
+                        // ),
+                        Text(
+                          "princeappstudio\npresents",
+                          style: TextStyle(color: Colors.cyan, fontSize: 22),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            : const HomeScreen();
-      },
-    );
+                )
+              : const HomeScreen();
+        },
+      );
+    } else {
+      return const Blocked();
+    }
   }
 }
 
@@ -129,6 +145,17 @@ class FixedWidthScaffold extends StatelessWidget {
                 ),
               );
       },
+    );
+  }
+}
+
+class Blocked extends StatelessWidget {
+  const Blocked({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Scaffold(body: Center(child: Text("This page is not available!"))),
     );
   }
 }

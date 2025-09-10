@@ -1,17 +1,22 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
-import 'package:tic_tac_toe/components/icon_button.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
+import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
+import 'package:tic_tac_toe/provider/tictacit_provider.dart';
+import 'package:tic_tac_toe/screen/room.dart';
 import 'package:tic_tac_toe/screen/settings.dart';
 import 'package:tic_tac_toe/screen/single_mode.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
+
+import '../components/icon_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final AudioPlayer buttonClickPlayer = AudioPlayer();
 
   late Navigation navigation;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -35,8 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) {
+    return Consumer2<ThemeProvider, TicTacItProvider>(
+      builder: (context, themeProvider, t, _) {
         return WillPopScope(
           onWillPop: () async {
             return false;
@@ -51,12 +55,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      // Text(
+                      //   "Tic Tac Toe",
+                      //   style: GoogleFonts.hennyPenny(
+                      //     fontSize: 58,
+                      //     color: themeProvider.primaryColor,
+                      //   ),
+                      // ),
                       TextAnimator(
                         "Tic Tac Toe",
-                        style: TextStyle(
+                        style: GoogleFonts.hennyPenny(
                           fontSize: 58,
                           color: themeProvider.primaryColor,
-                          fontFamily: "HennyPenny",
                         ),
                         // characterDelay: const Duration(milliseconds: 100),
                         incomingEffect:
@@ -72,7 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             hasRestEffect: true,
                             msDelay: 1600,
                             child: Text(
-                              "Select mode",
+                              "Welcome ${t.player.name}! \n\nSelect mode",
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: themeProvider.secondaryColor,
                                 fontSize: defaultTextSize,
@@ -111,28 +122,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: "Play Now",
                           ),
                           const VerticalSpacer(16),
-                          MyButton(
-                            doStateChange: true,
-                            msDelay: 1200,
-                            onPressed: () {
-                              // PopUp.show(
-                              //   context,
-                              //   title: "Info",
-                              //   description:
-                              //       "To play the game Online with other players, please download the same app from PlayStore."
-                              //       "\n\nWe are working on an update to make it work within the GameIt application.",
-                              //   button1Text: "Visit PlayStore",
-                              //   button2Text: "Close",
-                              //   barrierDismissible: false,
-                              //   button1OnPressed: () async {
-                              //     launchUrl(Uri.parse(gameLinkAndroid));
-                              //   },
-                              //   button2OnPressed: () {
-                              //     Navigator.pop(context);
-                              //   },
-                              // );
+                          Consumer<RoomProvider>(
+                            builder: (context, room, _) {
+                              return MyButton(
+                                doStateChange: true,
+                                msDelay: 1200,
+                                onPressed: () async {
+                                  room.connect(t.player.id!);
+                                  navigation.changeScreenReplacement(
+                                    const RoomScreen(),
+                                    widget,
+                                  );
+                                },
+                                text: "Online",
+                                showLoading: room.isConnecting,
+                              );
                             },
-                            text: "Online",
                           ),
                         ],
                       ),
@@ -148,6 +153,47 @@ class _HomeScreenState extends State<HomeScreen> {
                       widget,
                     );
                   },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 84, right: 32),
+                  child: AnimationOnWidget(
+                    msDelay: 1400,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: themeProvider.primaryColor,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 2,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            spacing: 4,
+                            children: [
+                              Image.asset("assets/images/coin.png", width: 24),
+                              Text(
+                                "${t.coins}",
+                                style: TextStyle(
+                                  color: themeProvider.bgColor,
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

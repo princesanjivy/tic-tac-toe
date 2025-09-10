@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/my_spacer.dart';
 import 'package:tic_tac_toe/constants.dart';
@@ -43,12 +44,18 @@ class PlayerCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : Image.network(
+                : SvgPicture.string(
                     imageUrl,
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,
                   ),
+            // : Image.network(
+            //     imageUrl,
+            //     width: 100,
+            //     height: 100,
+            //     fit: BoxFit.cover,
+            //   ),
           ),
         ),
         const VerticalSpacer(16),
@@ -56,26 +63,34 @@ class PlayerCard extends StatelessWidget {
           name,
           style: TextStyle(
             fontSize: defaultTextSize,
-            color: Provider.of<ThemeProvider>(context, listen: true)
-                .secondaryColor,
+            color: Provider.of<ThemeProvider>(
+              context,
+              listen: true,
+            ).secondaryColor,
           ),
         ),
         const VerticalSpacer(12),
         showScore
             ? Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: Provider.of<ThemeProvider>(context, listen: true)
-                      .secondaryColor,
+                  color: Provider.of<ThemeProvider>(
+                    context,
+                    listen: true,
+                  ).secondaryColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   "Won: $scoreValue",
                   style: TextStyle(
                     fontSize: 14,
-                    color: Provider.of<ThemeProvider>(context, listen: true)
-                        .bgColor,
+                    color: Provider.of<ThemeProvider>(
+                      context,
+                      listen: true,
+                    ).bgColor,
                   ),
                 ),
               )

@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
 import 'package:tic_tac_toe/helper/audio_controller.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
-import 'package:vibration/vibration.dart';
 
 class MyButton extends StatelessWidget {
   const MyButton({
@@ -37,27 +37,23 @@ class MyButton extends StatelessWidget {
       onPressed: showLoading
           ? null
           : () async {
-              if (!kIsWeb) {
-                Vibration.vibrate(duration: 80, amplitude: 120);
-              }
+              HapticFeedback.vibrate();
               AudioController audioController = AudioController();
               audioController.buttonClick(context);
               await Future.delayed(Duration(milliseconds: msAnimationDelay));
               onPressed();
             },
       style: ButtonStyle(
-        minimumSize: MaterialStateProperty.all<Size>(
-          Size(width / 1.6, 48),
-        ),
+        minimumSize: MaterialStateProperty.all<Size>(Size(width / 1.6, 48)),
         elevation: MaterialStateProperty.all<double>(4),
         shape: MaterialStateProperty.all<OutlinedBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        backgroundColor: MaterialStateProperty.all<Color>(!invertColor
-            ? Provider.of<ThemeProvider>(context, listen: true).primaryColor
-            : Provider.of<ThemeProvider>(context, listen: true).bgColor),
+        backgroundColor: MaterialStateProperty.all<Color>(
+          !invertColor
+              ? Provider.of<ThemeProvider>(context, listen: true).primaryColor
+              : Provider.of<ThemeProvider>(context, listen: true).bgColor,
+        ),
       ),
       child: showLoading
           ? CircularProgressIndicator(
@@ -70,8 +66,10 @@ class MyButton extends StatelessWidget {
                 fontSize: defaultTextSize,
                 color: !invertColor
                     ? Provider.of<ThemeProvider>(context, listen: true).bgColor
-                    : Provider.of<ThemeProvider>(context, listen: true)
-                        .primaryColor,
+                    : Provider.of<ThemeProvider>(
+                        context,
+                        listen: true,
+                      ).primaryColor,
                 letterSpacing: 1,
               ),
             ),
