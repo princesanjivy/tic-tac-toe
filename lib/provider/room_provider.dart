@@ -9,6 +9,10 @@ import 'package:tic_tac_toe/api/gameit.dart';
 import 'package:tic_tac_toe/model/new_player.dart';
 import 'package:tic_tac_toe/model/room.dart';
 
+import '../helper/check_win.dart' as helper;
+import '../helper/game.dart';
+import '../helper/random_gen.dart';
+import '../model/symbol.dart';
 import '../nakama_service.dart';
 
 // const int OP_MOVE = 1;
@@ -24,6 +28,8 @@ class RoomProvider with ChangeNotifier {
   bool _showLoading = false;
   bool showJoinLoading = false;
   bool isRoomOwner = false;
+  late String turn;
+  bool gameStarted = false;
 
   var roomPath = ""; // TODO: change it
 
@@ -138,7 +144,20 @@ class RoomProvider with ChangeNotifier {
     );
   }
 
+  // OPCODE 2 = start
+  Future<void> startGame() async {
+    await nakamaService.sendMatchData(currentMatch!.matchId, 2, {
+      "start": true,
+    });
+    gameStarted = true;
+    notifyListeners();
+  }
   // New logics
+
+  void makeMove(int index) {
+    roomData.board[index] = isRoomOwner ? 1 : 2;
+    notifyListeners();
+  }
 
   Future<void> connect(String id) async {
     isConnecting = true;
@@ -158,6 +177,22 @@ class RoomProvider with ChangeNotifier {
   //   _listenData();
   //   notifyListeners();
   // }
+
+  helper.Result result = helper.Result(false, []);
+
+  void checkWin() {
+    result = helper.checkWin(
+      roomData.board,
+      turn == PlaySymbol.x ? 1 : 2, // need to check for the turn
+      getBoardSize(roomData.board),
+    );
+    if (turn == PlaySymbol.x) {
+      turn = PlaySymbol.o;
+    } else {
+      turn = PlaySymbol.x;
+    }
+    print("${result.positions}, ${result.hasWon}");
+  }
 
   void _listenPresence() {
     nakamaService.onMatchPresence().listen((event) {
@@ -181,19 +216,39 @@ class RoomProvider with ChangeNotifier {
       final decoded = jsonDecode(jsonString);
       print("Decoded data: $decoded");
       if (data.opCode == 2) {
-        // gameStarted = true;
-      } else if (data.opCode == 0) {
-        print("init");
-        isRoomDataRec = true;
+        gameStarted = true;
+        // Send initial roomData to other guy
+
+        final List board = List.generate(
+          generateRandomBoardSize(),
+          (index) => 0,
+        );
+        turn = PlaySymbol.x;
+        roomData = RoomData(
+          0, // need to be removed
+          "", // need to be removed
+          PlaySymbol.x,
+          [], // need to be removed
+          board,
+          1, // see if it's actaully required
+          DateTime.now(),
+        );
+
         await nakamaService.sendMatchData(
           currentMatch!.matchId,
-          45, // init
-          {"message": "ok", "room": roomData.toJson()},
+          1,
+          roomData.toJson(),
         );
-      } else if (data.opCode == 45) {
-        roomData = RoomData.fromJson(decoded["room"], 2242);
-        isRoomDataRec = true;
-        print(true);
+      } else if (data.opCode == 1) {
+        roomData = RoomData.fromJson(decoded, 0);
+        turn = PlaySymbol.x;
+      } else if (data.opCode == 12) {
+        roomData.board[decoded["index"]] = isRoomOwner ? 2 : 1;
+        checkWin();
+        // turn = decoded["turn"];
+        // print("Turn is : $turn");
+
+        // makeMove(decoded["index"]);
       }
       notifyListeners();
     });

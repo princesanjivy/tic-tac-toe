@@ -77,6 +77,8 @@ class GameProvider with ChangeNotifier {
     // showLoading = true;
     // notifyListeners();
 
+    print("Board: ${board.length}");
+
     List borderRadius = [
       const BorderRadius.only(topLeft: Radius.circular(16)),
       const BorderRadius.only(topRight: Radius.circular(16)),

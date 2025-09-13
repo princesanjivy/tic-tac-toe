@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 doStateChange: true,
                                 msDelay: 1200,
                                 onPressed: () async {
-                                  room.connect(t.player.id!);
+                                  room.connect(t.player.id);
                                   navigation.changeScreenReplacement(
                                     const RoomScreen(),
                                     widget,

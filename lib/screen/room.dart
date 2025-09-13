@@ -12,6 +12,7 @@ import 'package:tic_tac_toe/provider/auth_provider.dart';
 import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
 import 'package:tic_tac_toe/provider/tictacit_provider.dart';
+import 'package:tic_tac_toe/screen/game.dart';
 import 'package:tic_tac_toe/screen/home.dart';
 import 'package:tic_tac_toe/screen/lobby.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
@@ -147,7 +148,7 @@ class _RoomScreenState extends State<RoomScreen> {
                                   .trim();
                               await roomProvider.joinRoom(roomCode, t.token);
                               navigation.changeScreenReplacement(
-                                LobbyScreen(roomCode: roomCode),
+                                RoomController(roomCode: roomCode),
                                 widget,
                               );
                             } else {
@@ -190,7 +191,7 @@ class _RoomScreenState extends State<RoomScreen> {
                             final String roomCode = await roomProvider
                                 .createRoom(t.token);
                             navigation.changeScreenReplacement(
-                              LobbyScreen(roomCode: roomCode),
+                              RoomController(roomCode: roomCode),
                               widget,
                             );
                           },
@@ -215,6 +216,35 @@ class _RoomScreenState extends State<RoomScreen> {
             ],
           ),
         );
+      },
+    );
+  }
+}
+
+class RoomController extends StatefulWidget {
+  const RoomController({super.key, required this.roomCode});
+  final String roomCode;
+
+  @override
+  State<RoomController> createState() => _RoomControllerState();
+}
+
+class _RoomControllerState extends State<RoomController> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<RoomProvider>(
+      builder: (context, roomProvider, _) {
+        if (roomProvider.gameStarted) {
+          // dummy screen
+          // return const Scaffold(
+          //   body: Center(child: Text("Game started: Wow!")),
+          // );
+          return GameScreen(
+            roomData: roomProvider.roomData,
+            isRoomOwner: roomProvider.isRoomOwner,
+          );
+        }
+        return LobbyScreen(roomCode: widget.roomCode);
       },
     );
   }

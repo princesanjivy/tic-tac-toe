@@ -1,6 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/components/button.dart';
@@ -10,32 +9,32 @@ import 'package:tic_tac_toe/components/player_card.dart';
 import 'package:tic_tac_toe/components/pop_up.dart';
 import 'package:tic_tac_toe/constants.dart';
 import 'package:tic_tac_toe/helper/animation_widget.dart';
-import 'package:tic_tac_toe/helper/check_win.dart';
 import 'package:tic_tac_toe/helper/game.dart';
 import 'package:tic_tac_toe/helper/navigation.dart';
-import 'package:tic_tac_toe/model/player.dart';
-import 'package:tic_tac_toe/model/room.dart';
-import 'package:tic_tac_toe/model/symbol.dart';
-import 'package:tic_tac_toe/provider/auth_provider.dart';
 import 'package:tic_tac_toe/provider/game_provider.dart';
+import 'package:tic_tac_toe/provider/room_provider.dart';
 import 'package:tic_tac_toe/provider/theme_provider.dart';
+import 'package:tic_tac_toe/provider/tictacit_provider.dart';
 import 'package:tic_tac_toe/screen/room.dart';
-import 'package:vibration/vibration.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
+
+import '../model/new_player.dart';
+import '../model/room.dart';
+import '../model/symbol.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({
     super.key,
     required this.roomData,
     required this.isRoomOwner,
-    required this.result,
-    required this.screenshotImgKey,
+    // required this.result,
+    // required this.screenshotImgKey,
   });
 
   final RoomData roomData;
   final bool isRoomOwner;
-  final Result result;
-  final GlobalKey screenshotImgKey;
+  // final Result result;
+  // final GlobalKey screenshotImgKey;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -58,10 +57,58 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<GameAuthProvider, GameProvider, ThemeProvider>(
-      builder: (context, loginProvider, gameProvider, themeProvider, _) {
+    return Consumer4<
+      TicTacItProvider,
+      GameProvider,
+      ThemeProvider,
+      RoomProvider
+    >(
+      builder: (context, t, gameProvider, themeProvider, roomProvider, _) {
+        print("Players: ${roomProvider.userPresencePlayers}");
+
+        if (roomProvider.result.hasWon ||
+            !roomProvider.roomData.board.contains(0)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            PopUp.show(
+              context,
+              title: roomProvider.result.hasWon ? "Win" : "Game draw",
+              description:
+                  "${roomProvider.result.hasWon ? "wonMsg" : ""}Next round restarting in 5 seconds...",
+              button2Text: "Share",
+              button1Text: "Rate game",
+              barrierDismissible: false,
+              button2OnPressed: () async {
+                // screenshot and share image
+                // if (kIsWeb) {
+                //   Fluttertoast.showToast(
+                //     msg: "Oops! Share feature only available in Android",
+                //     toastLength: Toast.LENGTH_LONG,
+                //     gravity: ToastGravity.CENTER,
+                //   );
+                // } else {
+                //   final XFile xFile =
+                //   await screenshotBoard(screenshotImgKey);
+                //   Share.shareXFiles([xFile], text: "Had fun?");
+                // }
+              },
+              button1OnPressed: () {
+                // launchUrl(
+                //   Uri.parse(Platform.isIOS ? gameLinkIos: gameLinkAndroid),
+                // );
+              },
+            );
+          });
+          // gameProvider.resetBoard(
+          //   "$roomPath${roomData.code}",
+          //   roomData,
+          //   player,
+          //   widget.isRoomOwner,
+          //   context,
+          // );
+        }
+
         // See if any player leaves the game, show popup and go to HomeScreen()
-        if (widget.roomData.players.length <= 1) {
+        if (roomProvider.userPresencePlayers.length <= 1) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             PopUp.show(
               context,
@@ -122,7 +169,7 @@ class _GameScreenState extends State<GameScreen> {
           body: Stack(
             children: [
               RepaintBoundary(
-                key: widget.screenshotImgKey,
+                // key: widget.screenshotImgKey,
                 child: Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,14 +183,11 @@ class _GameScreenState extends State<GameScreen> {
                             msDelay: 400,
                             doStateChange: true,
                             child: PlayerCard(
-                              imageUrl: loginProvider.player.displayPicture,
+                              imageUrl: t.player.avatarUrl,
                               name:
-                                  "You (${widget.roomData.players[!widget.isRoomOwner ? 1 : 0].chose})",
+                                  "You (${roomProvider.isRoomOwner ? "X" : "O"})",
                               showScore: true,
-                              scoreValue: widget
-                                  .roomData
-                                  .players[!widget.isRoomOwner ? 1 : 0]
-                                  .winCount,
+                              scoreValue: 0,
                             ),
                           ),
                           AnimationOnWidget(
@@ -159,7 +203,14 @@ class _GameScreenState extends State<GameScreen> {
                             ),
                           ),
                           FutureBuilder<Player>(
-                            future: loginProvider.getUserById(),
+                            future: roomProvider.getPlayer(
+                              roomProvider
+                                  .userPresencePlayers[roomProvider.isRoomOwner
+                                      ? 1
+                                      : 0]
+                                  .username,
+                              t.token,
+                            ),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
                                 return CircularProgressIndicator(
@@ -170,24 +221,15 @@ class _GameScreenState extends State<GameScreen> {
                                 msDelay: 400,
                                 doStateChange: true,
                                 child: PlayerCard(
-                                  imageUrl: snapshot.data!.displayPicture,
+                                  imageUrl: snapshot.data!.avatarUrl,
                                   name:
-                                      "${snapshot.data!.name.split(" ")[0]} (${widget.roomData.players[widget.isRoomOwner ? 1 : 0].chose})",
+                                      "${snapshot.data!.name.split(" ")[0]} (${!roomProvider.isRoomOwner ? "X" : "O"})",
                                   showScore: true,
-                                  scoreValue: widget
-                                      .roomData
-                                      .players[widget.isRoomOwner ? 1 : 0]
-                                      .winCount,
+                                  scoreValue: 0,
                                 ),
                               );
                             },
                           ),
-                          // PlayerCard(
-                          //   imageUrl: imageUrl,
-                          //   name: "Opponent",
-                          //   showScore: true,
-                          //   scoreValue: 0,
-                          // ),
                         ],
                       ),
                       const VerticalSpacer(16),
@@ -202,8 +244,6 @@ class _GameScreenState extends State<GameScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(32),
                           child: Container(
-                            width: kIsWeb ? 500 : null,
-                            height: kIsWeb ? 500 : null,
                             alignment: Alignment.center,
                             padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
@@ -226,52 +266,66 @@ class _GameScreenState extends State<GameScreen> {
                               itemCount: widget.roomData.board.length,
                               itemBuilder: (context, index) {
                                 return GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
                                     // print(widget.roomData.board);
                                     // result = checkWin(
                                     //   widget.roomData.board,
                                     //   PlaySymbol.inNum(widget.roomData.turn),
                                     // );
-                                    if (widget.roomData.board[index] == 0 &&
-                                        widget.roomData.turn ==
-                                            widget
-                                                .roomData
-                                                .players[!widget.isRoomOwner
-                                                    ? 1
-                                                    : 0]
-                                                .chose) {
-                                      if (!kIsWeb) {
-                                        Vibration.vibrate(
-                                          duration: 80,
-                                          amplitude: 120,
-                                        );
-                                      }
-                                      FirebaseDatabase.instance
-                                          .ref(
-                                            "${widget.roomData.code}/board/$index",
-                                          )
-                                          .set(
-                                            PlaySymbol.inNum(
-                                              widget.roomData.turn,
-                                            ),
+                                    // if (widget.roomData.board[index] == 0 &&
+                                    //     widget.roomData.turn ==
+                                    //         widget
+                                    //             .roomData
+                                    //             .players[!widget.isRoomOwner
+                                    //                 ? 1
+                                    //                 : 0]
+                                    //             .chose) {
+                                    if (roomProvider.roomData.board[index] ==
+                                        0) {
+                                      HapticFeedback.vibrate();
+
+                                      // x = 1
+                                      // o = 2
+
+                                      roomProvider.makeMove(index);
+                                      roomProvider.checkWin();
+                                      await roomProvider.nakamaService
+                                          .sendMatchData(
+                                            roomProvider.currentMatch!.matchId,
+                                            12,
+                                            {
+                                              "index": index,
+                                              "turn": roomProvider.turn,
+                                            },
                                           );
-                                      FirebaseDatabase.instance
-                                          .ref("${widget.roomData.code}/turn")
-                                          .set(
-                                            widget.roomData.turn == PlaySymbol.x
-                                                ? PlaySymbol.o
-                                                : PlaySymbol.x,
-                                          );
+
+                                      // FirebaseDatabase.instance
+                                      //     .ref(
+                                      //       "${widget.roomData.code}/board/$index",
+                                      //     )
+                                      //     .set(
+                                      //       PlaySymbol.inNum(
+                                      //         widget.roomData.turn,
+                                      //       ),
+                                      //     );
+                                      // FirebaseDatabase.instance
+                                      //     .ref("${widget.roomData.code}/turn")
+                                      //     .set(
+                                      //       widget.roomData.turn == PlaySymbol.x
+                                      //           ? PlaySymbol.o
+                                      //           : PlaySymbol.x,
+                                      //     );
                                     }
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color:
-                                          widget.result.positions.contains(
-                                            index,
-                                          )
-                                          ? Colors.deepOrange.withOpacity(0.8)
-                                          : themeProvider.bgColor,
+                                          // widget.result.positions.contains(
+                                          //   index,
+                                          // )
+                                          // ? Colors.deepOrange.withOpacity(0.8)
+                                          // :
+                                          themeProvider.bgColor,
                                       border: Border.all(
                                         color: themeProvider.primaryColor,
                                         // width: 2,
@@ -293,11 +347,12 @@ class _GameScreenState extends State<GameScreen> {
                                         style: GoogleFonts.hennyPenny(
                                           fontSize: 42 - 8,
                                           color:
-                                              widget.result.positions.contains(
-                                                index,
-                                              )
-                                              ? themeProvider.bgColor
-                                              : themeProvider.primaryColor,
+                                              // widget.result.positions.contains(
+                                              //   index,
+                                              // )
+                                              // ? themeProvider.bgColor
+                                              // :
+                                              themeProvider.primaryColor,
                                         ),
                                       ),
                                     ),
@@ -327,13 +382,7 @@ class _GameScreenState extends State<GameScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            (widget.roomData.turn ==
-                                    widget
-                                        .roomData
-                                        .players[!widget.isRoomOwner ? 1 : 0]
-                                        .chose)
-                                ? "Your turn"
-                                : "Opponent turn",
+                            "Your turn",
                             style: TextStyle(
                               fontSize: defaultTextSize,
                               color: themeProvider.bgColor,

@@ -263,9 +263,18 @@ class _LobbyScreenState extends State<LobbyScreen> {
                     MyButton(
                       msDelay: 1600,
                       doStateChange: true,
-                      text: "Waiting...",
+                      text: roomProvider.userPresencePlayers.length == 2
+                          ? roomProvider.isRoomOwner
+                                ? "Start"
+                                : "Host to Start"
+                          : "Waiting...",
                       onPressed: () {
-                        print("TODO");
+                        if (roomProvider.isRoomOwner) {
+                          if (roomProvider.userPresencePlayers.length == 2) {
+                            // Can start the game
+                            roomProvider.startGame();
+                          }
+                        }
                       },
                     ),
 
