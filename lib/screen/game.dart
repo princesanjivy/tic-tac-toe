@@ -69,13 +69,22 @@ class _GameScreenState extends State<GameScreen> {
         if (roomProvider.result.hasWon ||
             !roomProvider.roomData.board.contains(0)) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
+            String wonMsg =
+                ((roomProvider.turn != PlaySymbol.x &&
+                        roomProvider.isRoomOwner) ||
+                    (roomProvider.turn == PlaySymbol.x &&
+                        !roomProvider.isRoomOwner))
+                ? "You"
+                : "Opponent";
+
             PopUp.show(
               context,
               title: roomProvider.result.hasWon ? "Win" : "Game draw",
-              description:
-                  "${roomProvider.result.hasWon ? "wonMsg" : ""}Next round restarting in 5 seconds...",
-              button2Text: "Share",
-              button1Text: "Rate game",
+              description: roomProvider.result.hasWon
+                  ? "$wonMsg won this round!\n\n ${(wonMsg == "You") ? "Wow! You get 200 coins!" : "Oops! you lost 100 coins!"}"
+                  : "",
+              button2Text: "Exit",
+              button1Text: "2x Coins",
               barrierDismissible: false,
               button2OnPressed: () async {
                 // screenshot and share image
@@ -90,6 +99,9 @@ class _GameScreenState extends State<GameScreen> {
                 //   await screenshotBoard(screenshotImgKey);
                 //   Share.shareXFiles([xFile], text: "Had fun?");
                 // }
+                Navigator.pop(context);
+                Navigator.pop(context);
+                // This goes to home screen!!!
               },
               button1OnPressed: () {
                 // launchUrl(
@@ -190,18 +202,18 @@ class _GameScreenState extends State<GameScreen> {
                               scoreValue: 0,
                             ),
                           ),
-                          AnimationOnWidget(
-                            msDelay: 1200,
-                            doStateChange: true,
-                            child: Text(
-                              "Round\n${widget.roomData.round}",
-                              style: GoogleFonts.hennyPenny(
-                                fontSize: defaultTextSize - 2,
-                                color: themeProvider.primaryColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                          // AnimationOnWidget(
+                          //   msDelay: 1200,
+                          //   doStateChange: true,
+                          //   child: Text(
+                          //     "Round\n${widget.roomData.round}",
+                          //     style: GoogleFonts.hennyPenny(
+                          //       fontSize: defaultTextSize - 2,
+                          //       color: themeProvider.primaryColor,
+                          //     ),
+                          //     textAlign: TextAlign.center,
+                          //   ),
+                          // ),
                           FutureBuilder<Player>(
                             future: roomProvider.getPlayer(
                               roomProvider
@@ -281,7 +293,11 @@ class _GameScreenState extends State<GameScreen> {
                                     //                 : 0]
                                     //             .chose) {
                                     if (roomProvider.roomData.board[index] ==
-                                        0) {
+                                            0 &&
+                                        roomProvider.turn ==
+                                            (roomProvider.isRoomOwner
+                                                ? PlaySymbol.x
+                                                : PlaySymbol.o)) {
                                       HapticFeedback.vibrate();
 
                                       // x = 1
@@ -320,12 +336,10 @@ class _GameScreenState extends State<GameScreen> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color:
-                                          // widget.result.positions.contains(
-                                          //   index,
-                                          // )
-                                          // ? Colors.deepOrange.withOpacity(0.8)
-                                          // :
-                                          themeProvider.bgColor,
+                                          roomProvider.result.positions
+                                              .contains(index)
+                                          ? Colors.deepOrange.withOpacity(0.8)
+                                          : themeProvider.bgColor,
                                       border: Border.all(
                                         color: themeProvider.primaryColor,
                                         // width: 2,
@@ -347,12 +361,10 @@ class _GameScreenState extends State<GameScreen> {
                                         style: GoogleFonts.hennyPenny(
                                           fontSize: 42 - 8,
                                           color:
-                                              // widget.result.positions.contains(
-                                              //   index,
-                                              // )
-                                              // ? themeProvider.bgColor
-                                              // :
-                                              themeProvider.primaryColor,
+                                              roomProvider.result.positions
+                                                  .contains(index)
+                                              ? themeProvider.bgColor
+                                              : themeProvider.primaryColor,
                                         ),
                                       ),
                                     ),
@@ -382,7 +394,12 @@ class _GameScreenState extends State<GameScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            "Your turn",
+                            (roomProvider.turn ==
+                                    (roomProvider.isRoomOwner
+                                        ? PlaySymbol.x
+                                        : PlaySymbol.o))
+                                ? "Your turn"
+                                : "Opponent turn",
                             style: TextStyle(
                               fontSize: defaultTextSize,
                               color: themeProvider.bgColor,

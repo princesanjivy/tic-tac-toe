@@ -191,6 +191,7 @@ class RoomProvider with ChangeNotifier {
     } else {
       turn = PlaySymbol.x;
     }
+    print("Current turn is: $turn");
     print("${result.positions}, ${result.hasWon}");
   }
 
